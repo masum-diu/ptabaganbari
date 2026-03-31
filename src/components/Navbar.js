@@ -10,11 +10,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 const NAV_LINKS = [
-  { label: "Home",    href: "/" },
-  { label: "About",   href: "/about" },
-  { label: "Gallery", href: "/gallery" },
-  // { label: "Booking", href: "/booking" },
-  { label: "Map",     href: "/map" },
+  { label: "Home",      href: "/" },
+  { label: "About",     href: "/about" },
+  { label: "Gallery",   href: "/gallery" },
+  { label: "My Ticket", href: "/my-ticket" },
+  { label: "Map",       href: "/map" },
 ];
 
 export default function Navbar() {

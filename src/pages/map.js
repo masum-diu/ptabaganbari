@@ -52,7 +52,7 @@ export default function MapPage() {
           <Grid container spacing={4}>
 
             {/* Google Map */}
-            <Grid size={{ xs: 12, md: 8 }}>
+            <Grid item xs={12} md={8}>
               <Box sx={{ borderRadius: 4, overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.12)", border: "2px solid", borderColor: "primary.light", height: 480 }}>
                 <iframe
                   title="PTA BaganBari Resort Location"
@@ -78,7 +78,7 @@ export default function MapPage() {
             </Grid>
 
             {/* Info Cards */}
-            <Grid size={{ xs: 12, md: 4 }}>
+            <Grid item xs={12} md={4}>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 {INFO.map((item) => (
                   <Box key={item.title} sx={{
