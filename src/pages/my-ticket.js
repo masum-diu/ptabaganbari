@@ -100,7 +100,7 @@ export default function MyTicket() {
               { icon: <GroupIcon  sx={{ fontSize: "0.9rem", color: "#aaa" }} />, label: "Persons", value: `${ticket.persons} ${ticket.persons === 1 ? "Person" : "Persons"}` },
               { icon: <PaidIcon   sx={{ fontSize: "0.9rem", color: "#aaa" }} />, label: "Total",   value: `৳${ticket.total}` },
             ].map((row) => (
-              <Grid item xs={6} key={row.label}>
+              <Grid size={{ xs: 12, sm: 6 }} key={row.label}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 0.3 }}>
                   {row.icon}
                   <Typography color="text.secondary" fontSize="0.72rem">{row.label}</Typography>
