@@ -20,7 +20,7 @@ import supabase from "@/lib/supabase";
 function StatCard({ icon, label, value, color }) {
   return (
     <Box sx={{
-      bgcolor: "#fff", borderRadius: 4, p: 3, textAlign: "center",
+      bgcolor: "#fff", borderRadius: 2, p: 3, textAlign: "center",
       boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
       border: "1.5px solid", borderColor: "divider",
       borderTop: "4px solid", borderTopColor: color,
@@ -163,7 +163,7 @@ export default function AdminDashboard() {
 
           {/* ── LEFT: CALENDAR ── */}
           <Grid size={{ xs: 12, md: 4, lg: 3 }}>
-            <Box sx={{ bgcolor: "#fff", borderRadius: 4, p: 3, boxShadow: "0 4px 24px rgba(0,0,0,0.08)", border: "1.5px solid", borderColor: "divider" }}>
+            <Box sx={{ bgcolor: "#fff", borderRadius: 2, p: 3, boxShadow: "0 4px 24px rgba(0,0,0,0.08)", border: "1.5px solid", borderColor: "divider" }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
                 <CalendarTodayIcon sx={{ color: "primary.main", fontSize: "1.1rem" }} />
                 <Typography fontWeight={800} color="primary.main">Select Date</Typography>
@@ -270,7 +270,7 @@ export default function AdminDashboard() {
           </Grid>
 
           {/* ── RIGHT: BOOKING TABLE ── */}
-          <Grid item xs={12} md={8} lg={9}>
+          <Grid size={{ xs: 12, md: 8, lg: 9 }}>
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 2, mb: 3 }}>
               <Box>
                 <Typography variant="h5" fontWeight={800}>
@@ -293,7 +293,7 @@ export default function AdminDashboard() {
             {deleted && <Alert severity="success" sx={{ mb: 2, borderRadius: 2 }}>Booking deleted successfully.</Alert>}
 
             {filtered.length === 0 ? (
-              <Box sx={{ textAlign: "center", py: 10, bgcolor: "#fff", borderRadius: 4, border: "1.5px solid", borderColor: "divider" }}>
+              <Box sx={{ textAlign: "center", py: 10, bgcolor: "#fff", borderRadius: 2, border: "1.5px solid", borderColor: "divider" }}>
                 <InboxIcon sx={{ fontSize: "3rem", color: "#ccc" }} />
                 <Typography color="text.secondary" mt={2} fontWeight={600}>
                   {viewMode === "date"
@@ -305,7 +305,7 @@ export default function AdminDashboard() {
                 </Typography>
               </Box>
             ) : (
-              <TableContainer component={Paper} sx={{ borderRadius: 4, boxShadow: "0 4px 24px rgba(0,0,0,0.08)", border: "1.5px solid", borderColor: "divider" }}>
+              <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: "0 4px 24px rgba(0,0,0,0.08)", border: "1.5px solid", borderColor: "divider" }}>
                 <Table>
                   <TableHead>
                     <TableRow sx={{ bgcolor: "secondary.dark" }}>
