@@ -2,6 +2,7 @@ import {
   Box, Container, Typography, Button,
   Grid, Card, CardContent, CardActions, Chip,
 } from "@mui/material";
+import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import Link from "next/link";
 
 const TICKETS = [
@@ -49,8 +50,8 @@ export default function Home() {
           </Box>
           <Box sx={{ mt: 5, display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/booking" style={{ textDecoration: "none" }}>
-              <Button variant="contained" color="primary" size="large" sx={{ px: 5, fontSize: "1rem" }}>
-                🎫 Book Ticket
+              <Button variant="contained" color="primary" size="large" startIcon={<ConfirmationNumberIcon />} sx={{ px: 5, fontSize: "1rem" }}>
+                 Book Ticket
               </Button>
             </Link>
             <Link href="/gallery" style={{ textDecoration: "none" }}>

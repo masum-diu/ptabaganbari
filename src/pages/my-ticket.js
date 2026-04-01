@@ -3,7 +3,10 @@ import {
   Box, Container, Typography, TextField, Button,
   Chip, Divider, Alert, InputAdornment, CircularProgress, Grid,
 } from "@mui/material";
+import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
+import SeachOutlined from "@mui/icons-material/SearchOutlined";
 import supabase from "@/lib/supabase";
+import { SearchOutlined } from "@mui/icons-material";
 
 export default function MyTicket() {
   const [phone, setPhone]       = useState("");
@@ -65,7 +68,7 @@ export default function MyTicket() {
 
         {/* ── SEARCH BOX ── */}
         <Box sx={{
-          bgcolor: "background.paper", borderRadius: 4, p: { xs: 3, md: 5 },
+          bgcolor: "background.paper", borderRadius: 2, p: { xs: 3, md: 5 },
           boxShadow: "0 8px 40px rgba(46,125,50,0.10)",
           border: "1.5px solid", borderColor: "divider", mb: 5,
         }}>
@@ -73,10 +76,11 @@ export default function MyTicket() {
             <Box sx={{
               width: 72, height: 72, borderRadius: "50%",
               background: "linear-gradient(135deg,#1b5e20,#2e7d32)",
+              color:"#fff",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: "2rem", mx: "auto", mb: 2,
               boxShadow: "0 8px 24px rgba(46,125,50,0.35)",
-            }}>🎫</Box>
+            }}><ConfirmationNumberIcon color="#fff" /></Box>
             <Typography variant="h5" fontWeight={800} mb={0.5}>Find Your Tickets</Typography>
             <Typography color="text.secondary" fontSize="0.88rem">
               Enter the phone number you used during booking
@@ -95,9 +99,9 @@ export default function MyTicket() {
               helperText={error || "Your Bangladesh mobile number"}
               InputProps={{ startAdornment: <InputAdornment position="start">📞</InputAdornment> }}
             />
-            <Button type="submit" variant="contained" color="primary" size="large" fullWidth
+            <Button type="submit" variant="contained" startIcon={<SearchOutlined />} color="primary" size="large" fullWidth
               sx={{ py: 1.5, fontSize: "1rem" }} disabled={loading}>
-              {loading ? <CircularProgress size={22} color="inherit" /> : "🔍 Find My Tickets"}
+              {loading ? <CircularProgress size={22} color="inherit" /> : " Find My Tickets"}
             </Button>
             {searched && (
               <Button variant="outlined" color="primary" fullWidth onClick={handleClear} sx={{ py: 1.2 }}>
@@ -154,7 +158,7 @@ export default function MyTicket() {
                         </Box>
                       </Box>
                       <Box sx={{
-                        px: 2, py: 0.5, borderRadius: 5,
+                        px: 2, py: 0.5, borderRadius: 2,
                         bgcolor: ticket.used ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)",
                         border: "1px solid rgba(255,255,255,0.35)",
                       }}>

@@ -52,8 +52,8 @@ export default function MapPage() {
           <Grid container spacing={4}>
 
             {/* Google Map */}
-            <Grid item xs={12} md={8}>
-              <Box sx={{ borderRadius: 4, overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.12)", border: "2px solid", borderColor: "primary.light", height: 480 }}>
+            <Grid size={{ xs: 12, md: 8 }}>
+              <Box sx={{ borderRadius: 2, overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.12)", border: "2px solid", borderColor: "primary.light", height: 480 }}>
                 <iframe
                   title="PTA BaganBari Resort Location"
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7305.31412022308!2d91.12535930803425!3d23.723937674619588!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x375473005b976c95%3A0x274d1ebe6829dc8d!2z4Kay4KaV4KeN4Ka34KeA4Kaq4KeB4KawIOCmrOCmvuCml-CmvuCmqOCmrOCmvuCnnOCngA!5e0!3m2!1sen!2sbd!4v1774866059712!5m2!1sen!2sbd"
@@ -78,11 +78,11 @@ export default function MapPage() {
             </Grid>
 
             {/* Info Cards */}
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 {INFO.map((item) => (
                   <Box key={item.title} sx={{
-                    bgcolor: "background.paper", borderRadius: 3, p: 3,
+                    bgcolor: "background.paper", borderRadius: 2, p: 3,
                     boxShadow: "0 2px 16px rgba(0,0,0,0.07)",
                     border: "1.5px solid", borderColor: "divider",
                     transition: "all 0.2s",

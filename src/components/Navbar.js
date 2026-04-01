@@ -7,6 +7,8 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import Link from "next/link";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import { useRouter } from "next/router";
 
 const NAV_LINKS = [
@@ -50,8 +52,8 @@ export default function Navbar() {
               </Link>
             ))}
             <Link href="/booking" style={{ textDecoration: "none" }}>
-              <Button variant="contained" color="primary" size="small" sx={{ ml: 2, px: 3, borderRadius: 3 }}>
-                🎫 Book Now
+              <Button variant="contained" color="primary" size="small" startIcon={<ConfirmationNumberIcon />} sx={{ ml: 2, px: 3, borderRadius: 2 }}>
+                Book Now
               </Button>
             </Link>
           </Box>
@@ -119,8 +121,8 @@ export default function Navbar() {
         {/* Book Now CTA */}
         <Box sx={{ px: 3, pt: 3 }}>
           <Link href="/booking" style={{ textDecoration: "none" }} onClick={() => setDrawerOpen(false)}>
-            <Button variant="contained" color="primary" fullWidth sx={{ py: 1.4, borderRadius: 3, fontSize: "0.95rem" }}>
-              🎫 Book Now
+            <Button variant="contained" color="primary" fullWidth startIcon={<ConfirmationNumberIcon />} sx={{ py: 1.4, borderRadius: 2, fontSize: "0.95rem" }}>
+              Book Now
             </Button>
           </Link>
         </Box>

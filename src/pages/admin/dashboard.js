@@ -5,6 +5,15 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, TextField, InputAdornment, IconButton, Alert, Divider,
 } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
+import PeopleIcon from "@mui/icons-material/People";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import InboxIcon from "@mui/icons-material/Inbox";
 import Link from "next/link";
 import supabase from "@/lib/supabase";
 
@@ -16,7 +25,7 @@ function StatCard({ icon, label, value, color }) {
       border: "1.5px solid", borderColor: "divider",
       borderTop: "4px solid", borderTopColor: color,
     }}>
-      <Typography fontSize="2rem">{icon}</Typography>
+      <Box sx={{ color, fontSize: "2rem", display: "flex", justifyContent: "center" }}>{icon}</Box>
       <Typography variant="h4" fontWeight={800} sx={{ color }} mt={1}>{value}</Typography>
       <Typography color="text.secondary" fontSize="0.85rem" mt={0.5}>{label}</Typography>
     </Box>
@@ -130,38 +139,41 @@ export default function AdminDashboard() {
   const today        = toYMD(new Date());
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#0f1a0f" }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "#f5f7fa" }}>
       <Container maxWidth="xl" sx={{ py: 5 }}>
 
         {/* ── OVERALL STATS ── */}
-        <Typography variant="h5" fontWeight={800} mb={3}>📊 Overall Overview</Typography>
+        <Typography variant="h5" fontWeight={800} mb={3}>Overall Overview</Typography>
         <Grid container spacing={3} mb={5}>
-          <Grid item xs={6} md={3}>
-            <StatCard icon="🎫" label="Total Bookings" value={bookings.length}     color="#2e7d32" />
+          <Grid size={{ xs: 12, md: 3 }}>
+            <StatCard icon={<ConfirmationNumberIcon sx={{ fontSize: "2rem" }} />} label="Total Bookings" value={bookings.length}     color="#2e7d32" />
           </Grid>
-          <Grid item xs={6} md={3}>
-            <StatCard icon="👥" label="Total Visitors" value={totalPersons}        color="#1565c0" />
+          <Grid size={{ xs: 12, md: 3 }}>
+            <StatCard icon={<PeopleIcon sx={{ fontSize: "2rem" }} />}             label="Total Visitors" value={totalPersons}        color="#1565c0" />
           </Grid>
-          <Grid item xs={6} md={3}>
-            <StatCard icon="💰" label="Total Revenue"  value={`৳${totalRevenue}`} color="#6a1b9a" />
+          <Grid size={{ xs: 12, md: 3 }}>
+            <StatCard icon={<AttachMoneyIcon sx={{ fontSize: "2rem" }} />}        label="Total Revenue"  value={`৳${totalRevenue}`} color="#6a1b9a" />
           </Grid>
-          <Grid item xs={6} md={3}>
-            <StatCard icon="📅" label="Today"          value={new Date().toLocaleDateString("en-BD")} color="#e65100" />
+          <Grid size={{ xs: 12, md: 3 }}>
+            <StatCard icon={<CalendarTodayIcon sx={{ fontSize: "2rem" }} />}      label="Today"          value={new Date().toLocaleDateString("en-BD")} color="#e65100" />
           </Grid>
         </Grid>
 
         <Grid container spacing={4}>
 
           {/* ── LEFT: CALENDAR ── */}
-          <Grid item xs={12} md={4} lg={3}>
+          <Grid size={{ xs: 12, md: 4, lg: 3 }}>
             <Box sx={{ bgcolor: "#fff", borderRadius: 4, p: 3, boxShadow: "0 4px 24px rgba(0,0,0,0.08)", border: "1.5px solid", borderColor: "divider" }}>
-              <Typography fontWeight={800} mb={2} color="primary.main">📅 Select Date</Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+                <CalendarTodayIcon sx={{ color: "primary.main", fontSize: "1.1rem" }} />
+                <Typography fontWeight={800} color="primary.main">Select Date</Typography>
+              </Box>
 
               {/* Month nav */}
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
-                <IconButton size="small" onClick={prevMonth} sx={{ color: "primary.main" }}>◀</IconButton>
+                <IconButton size="small" onClick={prevMonth} sx={{ color: "primary.main" }}><ChevronLeftIcon /></IconButton>
                 <Typography fontWeight={700} fontSize="0.95rem">{MONTHS[calMonth]} {calYear}</Typography>
-                <IconButton size="small" onClick={nextMonth} sx={{ color: "primary.main" }}>▶</IconButton>
+                <IconButton size="small" onClick={nextMonth} sx={{ color: "primary.main" }}><ChevronRightIcon /></IconButton>
               </Box>
 
               {/* Day headers */}
@@ -262,7 +274,7 @@ export default function AdminDashboard() {
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 2, mb: 3 }}>
               <Box>
                 <Typography variant="h5" fontWeight={800}>
-                  {viewMode === "date" ? `📋 Bookings — ${formatDisplay(selectedDate)}` : "📋 All Bookings"}
+                  {viewMode === "date" ? `Bookings — ${formatDisplay(selectedDate)}` : "All Bookings"}
                 </Typography>
                 <Typography color="text.secondary" fontSize="0.85rem" mt={0.3}>
                   {filtered.length} booking{filtered.length !== 1 ? "s" : ""} found
@@ -274,7 +286,7 @@ export default function AdminDashboard() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 sx={{ width: { xs: "100%", sm: 280 } }}
-                InputProps={{ startAdornment: <InputAdornment position="start">🔍</InputAdornment> }}
+                InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: "#aaa", fontSize: "1.1rem" }} /></InputAdornment> }}
               />
             </Box>
 
@@ -282,7 +294,7 @@ export default function AdminDashboard() {
 
             {filtered.length === 0 ? (
               <Box sx={{ textAlign: "center", py: 10, bgcolor: "#fff", borderRadius: 4, border: "1.5px solid", borderColor: "divider" }}>
-                <Typography fontSize="3rem">📭</Typography>
+                <InboxIcon sx={{ fontSize: "3rem", color: "#ccc" }} />
                 <Typography color="text.secondary" mt={2} fontWeight={600}>
                   {viewMode === "date"
                     ? `No bookings on ${formatDisplay(selectedDate)}`
@@ -319,7 +331,7 @@ export default function AdminDashboard() {
                         <TableCell>
                           <IconButton size="small" onClick={() => handleDelete(b.id)}
                             sx={{ color: "#e53935", "&:hover": { bgcolor: "#ffebee" } }}>
-                            🗑️
+                            <DeleteIcon fontSize="small" />
                           </IconButton>
                         </TableCell>
                       </TableRow>

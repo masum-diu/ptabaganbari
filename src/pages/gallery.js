@@ -72,7 +72,7 @@ export default function Gallery() {
             {filtered.map((photo, i) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
                 <Box onClick={() => setLightbox(photo)} sx={{
-                  position: "relative", borderRadius: 3, overflow: "hidden",
+                  position: "relative", borderRadius: 2, overflow: "hidden",
                   cursor: "pointer", height: 240,
                   "&:hover img": { transform: "scale(1.08)" },
                   "&:hover .overlay": { opacity: 1 },
@@ -111,7 +111,7 @@ export default function Gallery() {
         }}>
           <Box sx={{ position: "relative", maxWidth: 900, width: "100%" }}>
             <Box component="img" src={lightbox.src} alt={lightbox.label}
-              sx={{ width: "100%", maxHeight: "80vh", objectFit: "contain", borderRadius: 3 }}
+              sx={{ width: "100%", maxHeight: "80vh", objectFit: "contain", borderRadius: 2 }}
             />
             <Box sx={{ textAlign: "center", mt: 2 }}>
               <Typography color="#fff" fontWeight={700} fontSize="1.1rem">{lightbox.label}</Typography>

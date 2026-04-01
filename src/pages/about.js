@@ -58,7 +58,7 @@ export default function About() {
                 <Box sx={{
                   position: "absolute", bottom: -20, right: -20,
                   background: "linear-gradient(135deg,#1b5e20,#2e7d32)",
-                  color: "#fff", borderRadius: 4, px: 3, py: 2,
+                  color: "#fff", borderRadius: 2, px: 3, py: 2,
                   boxShadow: "0 8px 24px rgba(46,125,50,0.4)", textAlign: "center",
                 }}>
                   <Typography fontWeight={800} fontSize="1.6rem">5+</Typography>
@@ -113,7 +113,7 @@ export default function About() {
             {VALUES.map((v) => (
               <Grid size={{ xs: 12, sm: 6, md: 3 }} key={v.title}>
                 <Box sx={{
-                  p: 4, borderRadius: 4, border: "1.5px solid", borderColor: "divider",
+                  p: 4, borderRadius: 2, border: "1.5px solid", borderColor: "divider",
                   textAlign: "center", height: "100%",
                   transition: "all 0.25s",
                   "&:hover": { boxShadow: "0 8px 32px rgba(46,125,50,0.12)", borderColor: "primary.light", transform: "translateY(-4px)" },
@@ -139,7 +139,7 @@ export default function About() {
             {TEAM.map((member) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={member.name}>
                 <Box sx={{
-                  textAlign: "center", p: 4, borderRadius: 4,
+                  textAlign: "center", p: 4, borderRadius: 2,
                   bgcolor: "background.paper", boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
                   border: "1.5px solid", borderColor: "divider",
                   transition: "all 0.25s",

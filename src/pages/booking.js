@@ -56,6 +56,7 @@ export default function Booking() {
       used_at: null,
       bkash_number: form.payment.bkashNumber,
       trx_id: form.payment.trxID,
+      status: "pending",
        status: "pending",
     };
 
