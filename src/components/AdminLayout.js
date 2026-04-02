@@ -7,6 +7,7 @@ import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import ShieldIcon from "@mui/icons-material/Shield";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
+import LocalAtmIcon        from "@mui/icons-material/LocalAtm";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import Link from "next/link";
@@ -15,6 +16,7 @@ const NAV_ITEMS = [
   { icon: <DashboardIcon fontSize="small" />,          label: "Dashboard",    href: "/admin/dashboard" },
   { icon: <ListAltIcon fontSize="small" />,            label: "Booking List", href: "/admin/bookinglist" },
   { icon: <ConfirmationNumberIcon fontSize="small" />, label: "Ticket Check", href: "/admin/ticket-check" },
+  { icon: <LocalAtmIcon fontSize="small" />,           label: "Cash Ticket",  href: "/admin/cash-ticket" },
 ];
 
 const SIDEBAR_WIDTH = 240;
