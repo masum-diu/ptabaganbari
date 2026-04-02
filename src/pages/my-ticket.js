@@ -1,26 +1,180 @@
 import { useState } from "react";
 import {
   Box, Container, Typography, TextField, Button,
-  Chip, Divider, Alert, InputAdornment, CircularProgress, Grid,
+  Chip, Divider, Alert, InputAdornment, CircularProgress,
+  Grid, Tabs, Tab, Dialog, DialogContent, IconButton,
 } from "@mui/material";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
-import SearchIcon from "@mui/icons-material/Search";
-import PhoneIcon from "@mui/icons-material/Phone";
-import PersonIcon from "@mui/icons-material/Person";
-import GroupIcon from "@mui/icons-material/Group";
-import PaidIcon from "@mui/icons-material/Paid";
+import SearchIcon      from "@mui/icons-material/Search";
+import PhoneIcon       from "@mui/icons-material/Phone";
+import PersonIcon      from "@mui/icons-material/Person";
+import GroupIcon       from "@mui/icons-material/Group";
+import PaidIcon        from "@mui/icons-material/Paid";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
+import CancelIcon      from "@mui/icons-material/Cancel";
 import HourglassTopIcon from "@mui/icons-material/HourglassTop";
-import BlockIcon from "@mui/icons-material/Block";
+import BlockIcon       from "@mui/icons-material/Block";
+import VisibilityIcon  from "@mui/icons-material/Visibility";
+import CloseIcon       from "@mui/icons-material/Close";
 import supabase from "@/lib/supabase";
 
+/* ── Ticket Detail Dialog ── */
+function TicketDialog({ ticket, open, onClose }) {
+  if (!ticket) return null;
+  const isVisited = ticket.used;
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth
+      PaperProps={{ sx: { borderRadius: 2, overflow: "hidden", border: `2px solid ${isVisited ? "#90caf9" : "#c8e6c9"}` } }}>
+      {/* Header */}
+      <Box sx={{
+        background: isVisited ? "linear-gradient(135deg,#1565c0,#1976d2)" : "linear-gradient(135deg,#1b5e20,#2e7d32)",
+        px: 3, py: 3, display: "flex", alignItems: "center", justifyContent: "space-between",
+      }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          {isVisited
+            ? <CheckCircleIcon sx={{ color: "#fff", fontSize: "2rem" }} />
+            : <ConfirmationNumberIcon sx={{ color: "#fff", fontSize: "2rem" }} />}
+          <Box>
+            <Typography fontWeight={800} color="#fff">{ticket.id}</Typography>
+            <Typography color="rgba(255,255,255,0.75)" fontSize="0.75rem">{ticket.date}</Typography>
+          </Box>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box sx={{ px: 1.5, py: 0.4, borderRadius: 2, bgcolor: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.4)" }}>
+            <Typography fontSize="0.7rem" fontWeight={800} color="#fff" letterSpacing={1}>
+              {isVisited ? "VISITED" : "VALID"}
+            </Typography>
+          </Box>
+          <IconButton onClick={onClose} size="small" sx={{ color: "rgba(255,255,255,0.8)" }}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Box>
+      </Box>
+
+      {/* Tear line */}
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box sx={{ width: 18, height: 18, borderRadius: "50%", bgcolor: "#f5f7fa", ml: -1.1, border: `1.5px solid ${isVisited ? "#90caf9" : "#c8e6c9"}` }} />
+        <Box sx={{ flex: 1, borderTop: `2px dashed ${isVisited ? "#90caf9" : "#c8e6c9"}`, opacity: 0.5 }} />
+        <Box sx={{ width: 18, height: 18, borderRadius: "50%", bgcolor: "#f5f7fa", mr: -1.1, border: `1.5px solid ${isVisited ? "#90caf9" : "#c8e6c9"}` }} />
+      </Box>
+
+      <DialogContent sx={{ px: 3, py: 3 }}>
+        <Grid container spacing={2} mb={2}>
+          {[
+            { icon: <PersonIcon sx={{ fontSize: "0.9rem", color: "#aaa" }} />, label: "Name",    value: ticket.name },
+            { icon: <PhoneIcon  sx={{ fontSize: "0.9rem", color: "#aaa" }} />, label: "Phone",   value: ticket.phone },
+            { icon: <GroupIcon  sx={{ fontSize: "0.9rem", color: "#aaa" }} />, label: "Persons", value: `${ticket.persons} ${ticket.persons === 1 ? "Person" : "Persons"}` },
+            { icon: <PaidIcon   sx={{ fontSize: "0.9rem", color: "#aaa" }} />, label: "Total",   value: `৳${ticket.total}` },
+            { icon: <ConfirmationNumberIcon sx={{ fontSize: "0.9rem", color: "#aaa" }} />, label: "TrxID", value: ticket.trx_id || "—" },
+            { icon: <PhoneIcon  sx={{ fontSize: "0.9rem", color: "#aaa" }} />, label: "bKash",   value: ticket.bkash_number || "—" },
+          ].map(row => (
+            <Grid item xs={6} key={row.label}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 0.3 }}>
+                {row.icon}
+                <Typography color="text.secondary" fontSize="0.7rem">{row.label}</Typography>
+              </Box>
+              <Typography fontWeight={700} fontSize="0.88rem"
+                color={row.label === "Total" ? "primary.main" : "text.primary"}>
+                {row.value}
+              </Typography>
+            </Grid>
+          ))}
+        </Grid>
+
+        <Divider sx={{ mb: 2 }} />
+
+        {isVisited ? (
+          <Alert severity="info" icon={<CheckCircleIcon fontSize="small" />} sx={{ borderRadius: 2, fontSize: "0.82rem" }}>
+            <strong>Resort Visited!</strong> You visited on {ticket.used_at || "—"}.
+          </Alert>
+        ) : (
+          <Alert severity="success" icon={<ConfirmationNumberIcon fontSize="small" />} sx={{ borderRadius: 2, fontSize: "0.82rem" }}>
+            <strong>Valid Ticket!</strong> Show this at the entrance gate to enter.
+          </Alert>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/* ── Ticket Row Card ── */
+function TicketRow({ ticket, onView }) {
+  const isVisited  = ticket.used;
+  const isRejected = ticket.status === "rejected";
+
+  const borderColor = isRejected ? "#ffcdd2" : isVisited ? "#90caf9" : "#c8e6c9";
+  const headerBg    = isRejected
+    ? "linear-gradient(135deg,#b71c1c,#c62828)"
+    : isVisited
+    ? "linear-gradient(135deg,#1565c0,#1976d2)"
+    : "linear-gradient(135deg,#1b5e20,#2e7d32)";
+  const statusLabel = isRejected ? "Rejected" : isVisited ? "Visited" : "Valid";
+  const statusColor = isRejected ? "#c62828"  : isVisited ? "#1565c0" : "#2e7d32";
+  const statusBg    = isRejected ? "#ffebee"  : isVisited ? "#e3f2fd" : "#e8f5e9";
+
+  return (
+    <Box sx={{
+      bgcolor: "#fff", borderRadius: 2, p: 2.5,
+      border: `1.5px solid ${borderColor}`,
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      flexWrap: "wrap", gap: 2,
+      transition: "all 0.2s",
+      "&:hover": { boxShadow: "0 4px 20px rgba(0,0,0,0.09)", transform: "translateY(-1px)" },
+    }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{
+          width: 42, height: 42, borderRadius: 2,
+          background: headerBg,
+          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+        }}>
+          {isRejected
+            ? <CancelIcon sx={{ color: "#fff", fontSize: "1.3rem" }} />
+            : isVisited
+            ? <CheckCircleIcon sx={{ color: "#fff", fontSize: "1.3rem" }} />
+            : <ConfirmationNumberIcon sx={{ color: "#fff", fontSize: "1.3rem" }} />}
+        </Box>
+        <Box>
+          <Typography fontWeight={800} fontSize="0.92rem">{ticket.id}</Typography>
+          <Typography color="text.secondary" fontSize="0.75rem">{ticket.date}</Typography>
+        </Box>
+      </Box>
+
+      <Box sx={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+        <Box>
+          <Typography color="text.secondary" fontSize="0.7rem">Persons</Typography>
+          <Typography fontWeight={700} fontSize="0.88rem">{ticket.persons}</Typography>
+        </Box>
+        <Box>
+          <Typography color="text.secondary" fontSize="0.7rem">Total</Typography>
+          <Typography fontWeight={700} fontSize="0.88rem" color="primary.main">৳{ticket.total}</Typography>
+        </Box>
+      </Box>
+
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+        <Box sx={{ px: 1.5, py: 0.4, borderRadius: 2, bgcolor: statusBg, border: `1px solid ${statusColor}44` }}>
+          <Typography fontSize="0.72rem" fontWeight={700} color={statusColor}>{statusLabel}</Typography>
+        </Box>
+        <Button size="small" variant="outlined"
+          color={isRejected ? "error" : "primary"}
+          startIcon={<VisibilityIcon sx={{ fontSize: "0.9rem !important" }} />}
+          onClick={() => !isRejected && onView(ticket)}
+          disabled={isRejected}
+          sx={{ fontSize: "0.75rem", fontWeight: 700, borderRadius: 2, px: 1.5, py: 0.5 }}>
+          View
+        </Button>
+      </Box>
+    </Box>
+  );
+}
+
 export default function MyTicket() {
-  const [phone, setPhone]       = useState("");
-  const [tickets, setTickets]   = useState([]);
-  const [searched, setSearched] = useState(false);
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState("");
+  const [phone, setPhone]         = useState("");
+  const [tickets, setTickets]     = useState([]);
+  const [searched, setSearched]   = useState(false);
+  const [loading, setLoading]     = useState(false);
+  const [error, setError]         = useState("");
+  const [tab, setTab]             = useState("approved");
+  const [viewTicket, setViewTicket] = useState(null);
 
   async function handleSearch(e) {
     e.preventDefault();
@@ -31,9 +185,7 @@ export default function MyTicket() {
     setError("");
     setLoading(true);
     const { data } = await supabase
-      .from("bookings")
-      .select("*")
-      .eq("phone", phone)
+      .from("bookings").select("*").eq("phone", phone)
       .order("timestamp", { ascending: false });
     setLoading(false);
     setTickets(data || []);
@@ -41,93 +193,20 @@ export default function MyTicket() {
   }
 
   function handleClear() {
-    setPhone(""); setTickets([]); setSearched(false); setError("");
+    setPhone(""); setTickets([]); setSearched(false); setError(""); setTab("approved");
   }
 
-  // separate by status
   const approvedTickets = tickets.filter(t => t.status === "approved");
   const pendingTickets  = tickets.filter(t => (t.status || "pending") === "pending");
   const rejectedTickets = tickets.filter(t => t.status === "rejected");
 
-  function TicketCard({ ticket }) {
-    const isVisited = ticket.used;
+  const tabList = [
+    { value: "approved", label: `Approved (${approvedTickets.length})` },
+    { value: "pending",  label: `Pending (${pendingTickets.length})` },
+    { value: "rejected", label: `Rejected (${rejectedTickets.length})` },
+  ];
 
-    // header color
-    const headerBg = isVisited
-      ? "linear-gradient(135deg,#1565c0,#1976d2)"   // blue = visited
-      : "linear-gradient(135deg,#1b5e20,#2e7d32)";  // green = valid
-
-    return (
-      <Box sx={{
-        bgcolor: "#fff", borderRadius: 2, overflow: "hidden",
-        boxShadow: "0 4px 24px rgba(46,125,50,0.10)",
-        border: `2px solid ${isVisited ? "#90caf9" : "#c8e6c9"}`,
-        transition: "all 0.2s",
-        "&:hover": { transform: "translateY(-3px)", boxShadow: "0 8px 32px rgba(0,0,0,0.12)" },
-      }}>
-        {/* Header */}
-        <Box sx={{ background: headerBg, px: 3, py: 2.5, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            {isVisited
-              ? <CheckCircleIcon sx={{ color: "#fff", fontSize: "1.8rem" }} />
-              : <ConfirmationNumberIcon sx={{ color: "#fff", fontSize: "1.8rem" }} />
-            }
-            <Box>
-              <Typography fontWeight={800} color="#fff" fontSize="0.95rem">{ticket.id}</Typography>
-              <Typography color="rgba(255,255,255,0.75)" fontSize="0.75rem">{ticket.date}</Typography>
-            </Box>
-          </Box>
-          <Box sx={{ px: 2, py: 0.5, borderRadius: 5, bgcolor: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.4)" }}>
-            <Typography fontSize="0.7rem" fontWeight={800} color="#fff" letterSpacing={1}>
-              {isVisited ? "VISITED" : "VALID"}
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* Tear line */}
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Box sx={{ width: 18, height: 18, borderRadius: "50%", bgcolor: "#f5f7fa", ml: -1.1, border: `1.5px solid ${isVisited ? "#90caf9" : "#c8e6c9"}` }} />
-          <Box sx={{ flex: 1, borderTop: `2px dashed ${isVisited ? "#90caf9" : "#c8e6c9"}`, opacity: 0.5 }} />
-          <Box sx={{ width: 18, height: 18, borderRadius: "50%", bgcolor: "#f5f7fa", mr: -1.1, border: `1.5px solid ${isVisited ? "#90caf9" : "#c8e6c9"}` }} />
-        </Box>
-
-        {/* Body */}
-        <Box sx={{ px: { xs: 2.5, md: 3 }, py: 3 }}>
-          <Grid container spacing={2} mb={2}>
-            {[
-              { icon: <PersonIcon sx={{ fontSize: "0.9rem", color: "#aaa" }} />, label: "Name",    value: ticket.name },
-              { icon: <PhoneIcon  sx={{ fontSize: "0.9rem", color: "#aaa" }} />, label: "Phone",   value: ticket.phone },
-              { icon: <GroupIcon  sx={{ fontSize: "0.9rem", color: "#aaa" }} />, label: "Persons", value: `${ticket.persons} ${ticket.persons === 1 ? "Person" : "Persons"}` },
-              { icon: <PaidIcon   sx={{ fontSize: "0.9rem", color: "#aaa" }} />, label: "Total",   value: `৳${ticket.total}` },
-            ].map((row) => (
-              <Grid size={{ xs: 12, sm: 6 }} key={row.label}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 0.3 }}>
-                  {row.icon}
-                  <Typography color="text.secondary" fontSize="0.72rem">{row.label}</Typography>
-                </Box>
-                <Typography fontWeight={700} fontSize="0.9rem"
-                  color={row.label === "Total" ? "primary.main" : "text.primary"}>
-                  {row.value}
-                </Typography>
-              </Grid>
-            ))}
-          </Grid>
-
-          <Divider sx={{ mb: 2 }} />
-
-          {isVisited ? (
-            <Alert severity="info" icon={<CheckCircleIcon fontSize="small" />} sx={{ borderRadius: 2, fontSize: "0.82rem" }}>
-              <strong>Resort Visited!</strong> You visited on {ticket.used_at || "—"}.
-            </Alert>
-          ) : (
-            <Alert severity="success" icon={<ConfirmationNumberIcon fontSize="small" />} sx={{ borderRadius: 2, fontSize: "0.82rem" }}>
-              <strong>Valid Ticket!</strong> Show this at the entrance gate to enter.
-            </Alert>
-          )}
-        </Box>
-      </Box>
-    );
-  }
+  const currentList = tab === "approved" ? approvedTickets : tab === "pending" ? pendingTickets : rejectedTickets;
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
@@ -154,7 +233,7 @@ export default function MyTicket() {
         </Box>
       </Box>
 
-      <Container maxWidth="md" sx={{ py: 8 }}>
+      <Container maxWidth="lg" sx={{ py: 8 }}>
 
         {/* ── SEARCH BOX ── */}
         <Box sx={{
@@ -179,19 +258,15 @@ export default function MyTicket() {
 
           <Box component="form" onSubmit={handleSearch} sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
             <TextField
-              label="Phone Number"
-              placeholder="e.g. 01712345678"
+              label="Phone Number" placeholder="e.g. 01712345678"
               value={phone}
-              onChange={(e) => { setPhone(e.target.value); setError(""); setSearched(false); setTickets([]); }}
-              fullWidth
-              inputProps={{ maxLength: 11 }}
-              error={!!error}
-              helperText={error || "Your Bangladesh mobile number"}
+              onChange={e => { setPhone(e.target.value); setError(""); setSearched(false); setTickets([]); }}
+              fullWidth inputProps={{ maxLength: 11 }}
+              error={!!error} helperText={error || "Your Bangladesh mobile number"}
               InputProps={{ startAdornment: <InputAdornment position="start"><PhoneIcon sx={{ color: "#aaa", fontSize: "1.1rem" }} /></InputAdornment> }}
             />
             <Button type="submit" variant="contained" color="primary" size="large" fullWidth
-              startIcon={<SearchIcon />}
-              sx={{ py: 1.5, fontSize: "1rem" }} disabled={loading}>
+              startIcon={<SearchIcon />} sx={{ py: 1.5, fontSize: "1rem" }} disabled={loading}>
               {loading ? <CircularProgress size={22} color="inherit" /> : "Find My Tickets"}
             </Button>
             {searched && (
@@ -204,95 +279,80 @@ export default function MyTicket() {
 
         {/* ── NO RESULTS ── */}
         {searched && tickets.length === 0 && (
-          <Alert severity="warning" sx={{ borderRadius: 3, mb: 4 }}>
+          <Alert severity="warning" sx={{ borderRadius: 2, mb: 4 }}>
             No bookings found for this number. Please check and try again.
           </Alert>
         )}
 
-        {/* ── PENDING TICKETS ── */}
-        {pendingTickets.length > 0 && (
-          <Box mb={5}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
-              <HourglassTopIcon sx={{ color: "#f57f17" }} />
-              <Typography variant="h6" fontWeight={800}>Pending Approval ({pendingTickets.length})</Typography>
-            </Box>
-            <Alert severity="warning" sx={{ borderRadius: 3, mb: 3 }}>
-              Your booking is under review. Your ticket will appear here once the admin approves your payment.
-            </Alert>
-            {pendingTickets.map(t => (
-              <Box key={t.id} sx={{ bgcolor: "#fff", borderRadius: 2, p: 3, mb: 2, border: "1.5px solid #ffe082", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 2 }}>
-                <Box>
-                  <Typography fontWeight={700} color="#f57f17">{t.id}</Typography>
-                  <Typography color="text.secondary" fontSize="0.82rem">{t.date}</Typography>
-                </Box>
-                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                  <Box>
-                    <Typography color="text.secondary" fontSize="0.72rem">Persons</Typography>
-                    <Typography fontWeight={700}>{t.persons}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography color="text.secondary" fontSize="0.72rem">Total</Typography>
-                    <Typography fontWeight={700} color="primary.main">৳{t.total}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography color="text.secondary" fontSize="0.72rem">TrxID</Typography>
-                    <Typography fontWeight={700} fontSize="0.82rem">{t.trx_id || "—"}</Typography>
-                  </Box>
-                </Box>
-                <Chip label="Pending" size="small" sx={{ bgcolor: "#fff8e1", color: "#f57f17", border: "1px solid #ffe082", fontWeight: 700 }} />
-              </Box>
-            ))}
-          </Box>
-        )}
-
-        {/* ── REJECTED TICKETS ── */}
-        {rejectedTickets.length > 0 && (
-          <Box mb={5}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
-              <BlockIcon sx={{ color: "#c62828" }} />
-              <Typography variant="h6" fontWeight={800}>Rejected ({rejectedTickets.length})</Typography>
-            </Box>
-            {rejectedTickets.map(t => (
-              <Box key={t.id} sx={{ bgcolor: "#fff", borderRadius: 2, p: 3, mb: 2, border: "1.5px solid #ffcdd2", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 2 }}>
-                <Box>
-                  <Typography fontWeight={700} color="#c62828">{t.id}</Typography>
-                  <Typography color="text.secondary" fontSize="0.82rem">{t.date}</Typography>
-                </Box>
-                <Chip label="Rejected" size="small" icon={<CancelIcon sx={{ fontSize: "0.9rem !important" }} />} sx={{ bgcolor: "#ffebee", color: "#c62828", border: "1px solid #ffcdd2", fontWeight: 700 }} />
-              </Box>
-            ))}
-            <Alert severity="error" sx={{ borderRadius: 3 }}>
-              Your booking was rejected. Please contact us for assistance.
-            </Alert>
-          </Box>
-        )}
-
-        {/* ── APPROVED TICKETS ── */}
-        {approvedTickets.length > 0 && (
+        {/* ── TABS + LIST ── */}
+        {tickets.length > 0 && (
           <Box>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3, flexWrap: "wrap", gap: 1 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                <CheckCircleIcon sx={{ color: "#2e7d32" }} />
-                <Typography variant="h6" fontWeight={800}>
-                  Approved Tickets ({approvedTickets.length})
+            {/* Tab header */}
+            <Box sx={{ bgcolor: "background.paper", borderRadius: 2, overflow: "hidden", border: "1.5px solid", borderColor: "divider", mb: 3 }}>
+              <Tabs
+                value={tab}
+                onChange={(_, v) => setTab(v)}
+                sx={{
+                  px: 2,
+                  "& .MuiTab-root": { textTransform: "none", fontWeight: 600, fontSize: "0.85rem", minHeight: 52 },
+                  "& .Mui-selected": { color: "#2e7d32 !important", fontWeight: 800 },
+                  "& .MuiTabs-indicator": { bgcolor: "#2e7d32" },
+                }}
+              >
+                {tabList.map(t => (
+                  <Tab key={t.value} value={t.value} label={
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      {t.value === "approved"  && <CheckCircleIcon sx={{ fontSize: "1rem", color: tab === t.value ? "#2e7d32" : "#aaa" }} />}
+                      {t.value === "pending"   && <HourglassTopIcon sx={{ fontSize: "1rem", color: tab === t.value ? "#f57f17" : "#aaa" }} />}
+                      {t.value === "rejected"  && <BlockIcon sx={{ fontSize: "1rem", color: tab === t.value ? "#c62828" : "#aaa" }} />}
+                      {t.label}
+                    </Box>
+                  } />
+                ))}
+              </Tabs>
+            </Box>
+
+            {/* Tab content */}
+            {tab === "pending" && pendingTickets.length > 0 && (
+              <Alert severity="warning" sx={{ borderRadius: 2, mb: 3 }}>
+                Your booking is under review. Ticket will appear once admin approves your payment.
+              </Alert>
+            )}
+            {tab === "rejected" && rejectedTickets.length > 0 && (
+              <Alert severity="error" sx={{ borderRadius: 2, mb: 3 }}>
+                Your booking was rejected. Please contact us for assistance.
+              </Alert>
+            )}
+
+            {currentList.length === 0 ? (
+              <Box sx={{ textAlign: "center", py: 8, bgcolor: "background.paper", borderRadius: 2, border: "1.5px solid", borderColor: "divider" }}>
+                <ConfirmationNumberIcon sx={{ fontSize: "3rem", color: "#ddd" }} />
+                <Typography color="text.secondary" mt={2} fontWeight={600}>
+                  No {tab} tickets found
                 </Typography>
               </Box>
-              <Chip
-                label={`Total: ৳${approvedTickets.reduce((s, t) => s + t.total, 0)}`}
-                color="primary" sx={{ fontWeight: 700 }}
-              />
-            </Box>
-            <Grid container spacing={3}>
-              {approvedTickets.map(ticket => (
-                <Grid item xs={12} md={6} key={ticket.id}>
-                  <TicketCard ticket={ticket} />
-                </Grid>
-              ))}
-            </Grid>
+            ) : (
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {/* summary chip for approved */}
+                {tab === "approved" && (
+                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Chip
+                      label={`Total Paid: ৳${approvedTickets.reduce((s, t) => s + t.total, 0)}`}
+                      color="primary" sx={{ fontWeight: 700 }}
+                    />
+                  </Box>
+                )}
+                {currentList.map(ticket => (
+                  <TicketRow key={ticket.id} ticket={ticket} onView={t => setViewTicket(t)} />
+                ))}
+              </Box>
+            )}
           </Box>
         )}
-
       </Container>
+
+      {/* ── TICKET DIALOG ── */}
+      <TicketDialog ticket={viewTicket} open={!!viewTicket} onClose={() => setViewTicket(null)} />
     </Box>
   );
 }
