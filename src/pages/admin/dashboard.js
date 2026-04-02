@@ -5,18 +5,18 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, TextField, InputAdornment, IconButton, Alert, Divider, CircularProgress,
 } from "@mui/material";
-import SearchIcon          from "@mui/icons-material/Search";
-import DeleteIcon          from "@mui/icons-material/Delete";
+import SearchIcon             from "@mui/icons-material/Search";
+import DeleteIcon             from "@mui/icons-material/Delete";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
-import PeopleIcon          from "@mui/icons-material/People";
-import AttachMoneyIcon     from "@mui/icons-material/AttachMoney";
-import TourIcon            from "@mui/icons-material/Tour";
-import CalendarTodayIcon   from "@mui/icons-material/CalendarToday";
-import ChevronLeftIcon     from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon    from "@mui/icons-material/ChevronRight";
-import InboxIcon           from "@mui/icons-material/Inbox";
-import CheckCircleIcon     from "@mui/icons-material/CheckCircle";
-import CancelIcon          from "@mui/icons-material/Cancel";
+import PeopleIcon             from "@mui/icons-material/People";
+import AttachMoneyIcon        from "@mui/icons-material/AttachMoney";
+import TourIcon               from "@mui/icons-material/Tour";
+import CalendarTodayIcon      from "@mui/icons-material/CalendarToday";
+import ChevronLeftIcon        from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon       from "@mui/icons-material/ChevronRight";
+import InboxIcon              from "@mui/icons-material/Inbox";
+import CheckCircleIcon        from "@mui/icons-material/CheckCircle";
+import CancelIcon             from "@mui/icons-material/Cancel";
 import supabase from "@/lib/supabase";
 
 function StatCard({ icon, label, value, color }) {
@@ -49,9 +49,9 @@ function StatusChip({ status }) {
   );
 }
 
-function toYMD(date)      { return date.toISOString().slice(0, 10); }
+function toYMD(date) { return date.toISOString().slice(0, 10); }
 function getDaysInMonth(y, m) { return new Date(y, m + 1, 0).getDate(); }
-function getFirstDay(y, m)    { return new Date(y, m, 1).getDay(); }
+function getFirstDay(y, m) { return new Date(y, m, 1).getDay(); }
 function formatDisplay(ymd) {
   return new Date(ymd + "T00:00:00").toLocaleDateString("en-BD", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
 }
@@ -119,16 +119,21 @@ export default function AdminDashboard() {
     b.phone.includes(search)
   );
 
-  const activeDates     = new Set(bookings.filter(b => b.timestamp).map(b => toYMD(new Date(b.timestamp))));
-  const approvedAll     = bookings.filter(b => b.status === "approved");
-  const totalRevenue    = approvedAll.reduce((s, b) => s + b.total, 0);
-  const totalPersons    = approvedAll.reduce((s, b) => s + b.persons, 0);
-  const totalVisited    = bookings.filter(b => b.used).reduce((s, b) => s + b.persons, 0);
+  const activeDates = new Set(bookings.filter(b => b.timestamp).map(b => toYMD(new Date(b.timestamp))));
+
+  // Total Visitors = approved persons - visited persons (remaining to visit)
+  // Total Visited  = persons who already entered (used=true)
+  const approvedAll    = bookings.filter(b => b.status === "approved");
+  const visitedAll     = bookings.filter(b => b.used === true);
+  const totalRevenue   = approvedAll.reduce((s, b) => s + b.total, 0);
+  const totalVisited   = visitedAll.reduce((s, b) => s + b.persons, 0);
+  const totalPersons   = approvedAll.reduce((s, b) => s + b.persons, 0) - totalVisited;
 
   const approvedForDate = bookingsForDate.filter(b => b.status === "approved");
-  const dateRevenue     = approvedForDate.reduce((s, b) => s + b.total, 0);
-  const datePersons     = approvedForDate.reduce((s, b) => s + b.persons, 0);
-  const dateVisited     = bookingsForDate.filter(b => b.used).reduce((s, b) => s + b.persons, 0);
+  const visitedForDate  = bookingsForDate.filter(b => b.used === true);
+  const dateRevenue    = approvedForDate.reduce((s, b) => s + b.total, 0);
+  const dateVisited    = visitedForDate.reduce((s, b) => s + b.persons, 0);
+  const datePersons    = approvedForDate.reduce((s, b) => s + b.persons, 0) - dateVisited;
 
   function prevMonth() {
     if (calMonth === 0) { setCalMonth(11); setCalYear(y => y - 1); }
@@ -147,16 +152,15 @@ export default function AdminDashboard() {
     <Box sx={{ minHeight: "100vh", bgcolor: "#f5f7fa" }}>
       <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, md: 4 } }}>
 
-        {/* ── STATS ── */}
         <Typography variant="h5" fontWeight={800} mb={3} color="#1a2e1a">Overall Overview</Typography>
         <Grid container spacing={3} mb={4}>
           {[
-            { icon: <ConfirmationNumberIcon sx={{ fontSize: "2rem" }} />, label: "Approved Bookings", value: approvedAll.length,    color: "#2e7d32" },
-            { icon: <PeopleIcon            sx={{ fontSize: "2rem" }} />, label: "Total Visitors",    value: totalPersons,           color: "#1565c0" },
-            { icon: <AttachMoneyIcon       sx={{ fontSize: "2rem" }} />, label: "Total Revenue",     value: `৳${totalRevenue}`,    color: "#6a1b9a" },
-            { icon: <TourIcon              sx={{ fontSize: "2rem" }} />, label: "Total Visited",     value: totalVisited,           color: "#e65100" },
+            { icon: <ConfirmationNumberIcon sx={{ fontSize: "2rem" }} />, label: "Approved Bookings", value: approvedAll.length, color: "#2e7d32" },
+            { icon: <PeopleIcon            sx={{ fontSize: "2rem" }} />, label: "Total Visitors",    value: totalPersons,       color: "#1565c0" },
+            { icon: <AttachMoneyIcon       sx={{ fontSize: "2rem" }} />, label: "Total Revenue",     value: `৳${totalRevenue}`, color: "#6a1b9a" },
+            { icon: <TourIcon              sx={{ fontSize: "2rem" }} />, label: "Total Visited",     value: totalVisited,       color: "#e65100" },
           ].map(s => (
-            <Grid size={{ xs: 6, md: 3 }} key={s.label}>
+            <Grid size={{ xs: 12, md: 3 }} key={s.label}>
               <StatCard {...s} />
             </Grid>
           ))}
