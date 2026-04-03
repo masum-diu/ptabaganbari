@@ -112,20 +112,41 @@ export default function Booking() {
       {/* CONTENT */}
       <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 }, px: { xs: 1.5, md: 3 } }}>
 
-        {/* Price + Info bar — mobile compact */}
+        {/* Price + Info bar */}
         <Box sx={{
-          background: "linear-gradient(135deg,#1b5e20,#2e7d32)", borderRadius: 2,
-          p: { xs: 2, md: 3 }, mb: { xs: 2, md: 3 }, color: "#fff",
-          display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 1,
+          background: "linear-gradient(135deg,#1b5e20,#2e7d32)",
+          borderRadius: 2, mb: { xs: 2, md: 3 }, overflow: "hidden",
+          boxShadow: "0 4px 20px rgba(46,125,50,0.25)",
         }}>
-          <Box>
-            <Typography fontSize="0.72rem" sx={{ opacity: 0.75, letterSpacing: 1 }}>TICKET PRICE</Typography>
-            <Typography fontWeight={800} fontSize={{ xs: "1.8rem", md: "2.2rem" }}>৳{PRICE_PER_PERSON} <Typography component="span" fontSize="0.85rem" sx={{ opacity: 0.8 }}>/ person</Typography></Typography>
+          <Box sx={{ px: { xs: 2.5, md: 4 }, py: { xs: 2, md: 2.5 }, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 1 }}>
+            {/* left */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Box sx={{ width: { xs: 48, md: 56 }, height: { xs: 48, md: 56 }, borderRadius: 2, bgcolor: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: { xs: "1.5rem", md: "1.8rem" }, flexShrink: 0 }}>
+                🎫
+              </Box>
+              <Box>
+                <Typography fontSize="0.68rem" color="rgba(255,255,255,0.65)" letterSpacing={1.5} fontWeight={700}>ENTRY TICKET</Typography>
+                <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+                  <Typography fontWeight={900} fontSize={{ xs: "2rem", md: "2.4rem" }} color="#fff" lineHeight={1}>৳{PRICE_PER_PERSON}</Typography>
+                  <Typography fontSize="0.8rem" color="rgba(255,255,255,0.7)">/person</Typography>
+                </Box>
+              </Box>
+            </Box>
+            {/* right — info pills */}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.8 }}>
+              {[
+                // { icon: "🕐", text: "Sat–Thu  8AM – 6PM" },
+                { icon: "📍", text: "Loxmipur, Kasba, Brahmanbaria" },
+              ].map(r => (
+                <Box key={r.text} sx={{ display: "flex", alignItems: "center", gap: 1, bgcolor: "rgba(255,255,255,0.12)", borderRadius: 5, px: 1.5, py: 0.4 }}>
+                  <Typography fontSize="0.75rem">{r.icon}</Typography>
+                  <Typography fontSize="0.72rem" color="rgba(255,255,255,0.9)" fontWeight={600}>{r.text}</Typography>
+                </Box>
+              ))}
+            </Box>
           </Box>
-          <Box sx={{ fontSize: "0.8rem", opacity: 0.85, lineHeight: 1.8 }}>
-            <Typography fontSize="0.8rem" sx={{ opacity: 0.85 }}>🕐 Sat–Thu 8AM–6PM</Typography>
-            <Typography fontSize="0.8rem" sx={{ opacity: 0.85 }}>📍 Kasba, Brahmanbaria</Typography>
-          </Box>
+          {/* bottom accent strip */}
+          <Box sx={{ height: 4, background: "linear-gradient(90deg,#a5d6a7,#66bb6a,#a5d6a7)" }} />
         </Box>
 
         <Grid container spacing={{ xs: 2, md: 4 }}>
