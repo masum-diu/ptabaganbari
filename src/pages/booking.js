@@ -127,7 +127,7 @@ export default function Booking() {
         <Grid container spacing={5} justifyContent="center">
 
           {/* FORM / CONFIRMATION */}
-          <Grid size={{ xs: 12, md: 7 }}>
+          <Grid size={{ xs: 12, md: 7 }} sx={{ order: { xs: 2, md: 1 } }}>
             {!confirmed ? (
               <Box sx={{ bgcolor: "background.paper", borderRadius: 2, boxShadow: "0 8px 40px rgba(46,125,50,0.10)", p: { xs: 3, md: 5 }, border: "1.5px solid", borderColor: "divider" }}>
                 <Chip label="Visitor Details" color="primary" sx={{ mb: 2 }} />
@@ -276,7 +276,7 @@ export default function Booking() {
           </Grid>
 
           {/* INFO PANEL */}
-          <Grid size={{ xs: 12, md: 5 }}>
+          <Grid size={{ xs: 12, md: 5 }} sx={{ order: { xs: 1, md: 2 } }}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
               <Box sx={{ bgcolor: "background.paper", borderRadius: 2, p: 4, border: "1.5px solid", borderColor: "divider", boxShadow: "0 4px 20px rgba(46,125,50,0.07)" }}>
                 <Chip label="Why Visit Us?" color="primary" sx={{ mb: 2 }} />
