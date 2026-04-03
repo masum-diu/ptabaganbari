@@ -1,4 +1,5 @@
 // ./src/pages/booking.js
+import Head from "next/head";
 import { useState } from "react";
 import {
   Box, Container, Typography, TextField, Button,
@@ -57,7 +58,6 @@ export default function Booking() {
       bkash_number: form.payment.bkashNumber,
       trx_id: form.payment.trxID,
       status: "pending",
-       status: "pending",
     };
 
     // Insert into Supabase
@@ -65,8 +65,8 @@ export default function Booking() {
     setLoading(false);
 
     if (error) {
-      console.log("Supabase insert error:", error);
-      setErrors({ name: "Booking failed. Please try again." });
+      console.error("Supabase insert error:", error);
+      setErrors({ submit: error.message || "Booking failed. Please try again." });
       return;
     }
 
@@ -82,6 +82,14 @@ export default function Booking() {
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
+      <Head>
+        <title>Book a Ticket — PTA BaganBari Resort</title>
+        <meta name="description" content="Book your visit to PTA BaganBari Resort online. Only ৳25 per person. Fill in your details and pay via bKash to confirm your ticket instantly." />
+        <meta name="keywords" content="book ticket PTA BaganBari, resort booking Bangladesh, bKash payment, Brahmanbaria resort ticket" />
+        <meta property="og:title" content="Book a Ticket — PTA BaganBari Resort" />
+        <meta property="og:description" content="Book your resort visit online for just ৳25 per person. Pay via bKash." />
+        <meta name="robots" content="index, follow" />
+      </Head>
 
       {/* HERO */}
       <Box sx={{ position: "relative", height: 280, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
@@ -213,6 +221,9 @@ export default function Booking() {
                     </Box>
                   </Box>
 
+                  {errors.submit && (
+                    <Alert severity="error" sx={{ borderRadius: 2 }}>{errors.submit}</Alert>
+                  )}
                   <Button type="submit" variant="contained" color="primary" size="large" fullWidth sx={{ py: 1.6, fontSize: "1rem" }} disabled={loading}>
                     {loading ? <CircularProgress size={22} color="inherit" /> : `✅ Confirm Booking — ৳${total}`}
                   </Button>

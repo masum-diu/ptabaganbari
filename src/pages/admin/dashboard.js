@@ -4,6 +4,7 @@ import {
   Box, Container, Typography, Button, Chip, Grid,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, TextField, InputAdornment, IconButton, Alert, Divider, CircularProgress,
+  Dialog, DialogContent,
 } from "@mui/material";
 import SearchIcon             from "@mui/icons-material/Search";
 import DeleteIcon             from "@mui/icons-material/Delete";
@@ -17,7 +18,62 @@ import ChevronRightIcon       from "@mui/icons-material/ChevronRight";
 import InboxIcon              from "@mui/icons-material/Inbox";
 import CheckCircleIcon        from "@mui/icons-material/CheckCircle";
 import CancelIcon             from "@mui/icons-material/Cancel";
+import VisibilityIcon         from "@mui/icons-material/Visibility";
+import CloseIcon              from "@mui/icons-material/Close";
 import supabase from "@/lib/supabase";
+
+function fmtDate(iso) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleString("en-BD", {
+    day: "2-digit", month: "short", year: "numeric",
+    hour: "2-digit", minute: "2-digit", hour12: true,
+  });
+}
+
+function BookingDetailModal({ booking: b, open, onClose }) {
+  if (!b) return null;
+  const rows = [
+    ["Booking ID", b.id],
+    ["Name", b.name],
+    ["Phone", b.phone],
+    ["Persons", `${b.persons} ${b.persons === 1 ? "Person" : "Persons"}`],
+    ["Total", `৳${b.total}`],
+    ["bKash Number", b.bkash_number || "—"],
+    ["Transaction ID", b.trx_id || "—"],
+    ["Date", b.date],
+    ["Status", b.status || "pending"],
+    ["Visited", b.used ? `Yes — ${fmtDate(b.used_at)}` : "No"],
+  ];
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth
+      PaperProps={{ sx: { borderRadius: 2, overflow: "hidden" } }}>
+      <Box sx={{ background: "linear-gradient(135deg,#1b5e20,#2e7d32)", px: 3, py: 2.5, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Box>
+          <Typography fontWeight={800} color="#fff">{b.id}</Typography>
+          <Typography color="rgba(255,255,255,0.75)" fontSize="0.75rem">{b.date}</Typography>
+        </Box>
+        <IconButton onClick={onClose} size="small" sx={{ color: "rgba(255,255,255,0.8)" }}>
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      </Box>
+      <DialogContent sx={{ px: 3, py: 3 }}>
+        <Grid container spacing={1.5}>
+          {rows.map(([label, value]) => (
+            <Grid size={{ xs: 12, sm: 6 }} key={label}>
+              <Typography color="text.secondary" fontSize="0.7rem" mb={0.3}>{label}</Typography>
+              <Typography fontWeight={700} fontSize="0.88rem"
+                color={label === "Total" ? "primary.main" : label === "Status" ? (b.status === "approved" ? "#2e7d32" : b.status === "rejected" ? "#c62828" : "#f57f17") : "text.primary"}>
+                {value}
+              </Typography>
+            </Grid>
+          ))}
+        </Grid>
+        <Divider sx={{ my: 2 }} />
+        <StatusChip status={b.status} />
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 function StatCard({ icon, label, value, color }) {
   return (
@@ -59,27 +115,98 @@ function formatDisplay(ymd) {
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAYS   = ["Su","Mo","Tu","We","Th","Fr","Sa"];
 
+const PAGE_SIZE = 20;
+
 export default function AdminDashboard() {
   const router = useRouter();
+
+  // table state
   const [bookings, setBookings]         = useState([]);
+  const [tableTotal, setTableTotal]     = useState(0);
+  const [page, setPage]                 = useState(0);
+  const [tableLoading, setTableLoading] = useState(false);
   const [search, setSearch]             = useState("");
-  const [deleted, setDeleted]           = useState(false);
-  const [approving, setApproving]       = useState(null);
-  const [actionMsg, setActionMsg]       = useState(null);
+  const [searchInput, setSearchInput]   = useState("");
+
+  // overall stats
+  const [stats, setStats]               = useState({ approved: 0, visitors: 0, revenue: 0, visited: 0 });
+
+  // date stats
+  const [dateStats, setDateStats]       = useState({ approved: 0, visitors: 0, revenue: 0, visited: 0 });
+
+  // calendar
+  const [activeDates, setActiveDates]   = useState(new Set());
   const [selectedDate, setSelectedDate] = useState(toYMD(new Date()));
   const [calYear, setCalYear]           = useState(new Date().getFullYear());
   const [calMonth, setCalMonth]         = useState(new Date().getMonth());
   const [viewMode, setViewMode]         = useState("date");
 
+  const [deleted, setDeleted]           = useState(false);
+  const [approving, setApproving]       = useState(null);
+  const [actionMsg, setActionMsg]       = useState(null);
+  const [viewBooking, setViewBooking]   = useState(null);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!sessionStorage.getItem("admin_auth")) { router.push("/admin"); return; }
-    fetchBookings();
+    fetchStats();
+    fetchActiveDates();
   }, []);
 
-  async function fetchBookings() {
-    const { data } = await supabase.from("bookings").select("*").order("timestamp", { ascending: false });
-    if (data) setBookings(data);
+  useEffect(() => { fetchDateStats(selectedDate); }, [selectedDate]);
+
+  useEffect(() => { fetchTable(); }, [viewMode, selectedDate, search, page]);
+
+  // ── overall stats via RPC-free aggregate ──
+  async function fetchStats() {
+    const [{ data: app }, { data: vis }] = await Promise.all([
+      supabase.from("bookings").select("persons, total").eq("status", "approved"),
+      supabase.from("bookings").select("persons").eq("used", true),
+    ]);
+    const approved = app?.length || 0;
+    const revenue  = app?.reduce((s, b) => s + b.total, 0) || 0;
+    const totalP   = app?.reduce((s, b) => s + b.persons, 0) || 0;
+    const visited  = vis?.reduce((s, b) => s + b.persons, 0) || 0;
+    setStats({ approved, revenue, visitors: totalP - visited, visited });
+  }
+
+  async function fetchActiveDates() {
+    const { data } = await supabase.from("bookings").select("timestamp");
+    if (data) setActiveDates(new Set(data.map(b => toYMD(new Date(b.timestamp)))));
+  }
+
+  async function fetchDateStats(ymd) {
+    const start = ymd + "T00:00:00.000Z";
+    const end   = ymd + "T23:59:59.999Z";
+    const [{ data: app }, { data: vis }] = await Promise.all([
+      supabase.from("bookings").select("persons, total").eq("status", "approved").gte("timestamp", start).lte("timestamp", end),
+      supabase.from("bookings").select("persons").eq("used", true).gte("timestamp", start).lte("timestamp", end),
+    ]);
+    const approved = app?.length || 0;
+    const revenue  = app?.reduce((s, b) => s + b.total, 0) || 0;
+    const totalP   = app?.reduce((s, b) => s + b.persons, 0) || 0;
+    const visited  = vis?.reduce((s, b) => s + b.persons, 0) || 0;
+    setDateStats({ approved, revenue, visitors: totalP - visited, visited });
+  }
+
+  async function fetchTable() {
+    setTableLoading(true);
+    let query = supabase.from("bookings").select("*", { count: "exact" }).order("timestamp", { ascending: false });
+
+    if (viewMode === "date") {
+      query = query.gte("timestamp", selectedDate + "T00:00:00.000Z").lte("timestamp", selectedDate + "T23:59:59.999Z");
+    } else {
+      query = query.range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+    }
+
+    if (search) {
+      query = query.or(`id.ilike.%${search}%,name.ilike.%${search}%,phone.ilike.%${search}%`);
+    }
+
+    const { data, count } = await query;
+    setBookings(data || []);
+    setTableTotal(count || 0);
+    setTableLoading(false);
   }
 
   async function handleApprove(id) {
@@ -90,6 +217,7 @@ export default function AdminDashboard() {
       setBookings(prev => prev.map(b => b.id === id ? { ...b, status: "approved" } : b));
       setActionMsg({ type: "success", text: "Booking approved!" });
       setTimeout(() => setActionMsg(null), 2500);
+      fetchStats();
     }
   }
 
@@ -107,33 +235,16 @@ export default function AdminDashboard() {
   async function handleDelete(id) {
     await supabase.from("bookings").delete().eq("id", id);
     setBookings(prev => prev.filter(b => b.id !== id));
+    setTableTotal(t => t - 1);
     setDeleted(true);
     setTimeout(() => setDeleted(false), 2500);
+    fetchStats();
   }
 
-  const bookingsForDate = bookings.filter(b => b.timestamp && toYMD(new Date(b.timestamp)) === selectedDate);
-  const displayList     = viewMode === "all" ? bookings : bookingsForDate;
-  const filtered        = displayList.filter(b =>
-    b.id.toLowerCase().includes(search.toLowerCase()) ||
-    b.name.toLowerCase().includes(search.toLowerCase()) ||
-    b.phone.includes(search)
-  );
+  function handleSearch(e) { e.preventDefault(); setSearch(searchInput); setPage(0); }
 
-  const activeDates = new Set(bookings.filter(b => b.timestamp).map(b => toYMD(new Date(b.timestamp))));
-
-  // Total Visitors = approved persons - visited persons (remaining to visit)
-  // Total Visited  = persons who already entered (used=true)
-  const approvedAll    = bookings.filter(b => b.status === "approved");
-  const visitedAll     = bookings.filter(b => b.used === true);
-  const totalRevenue   = approvedAll.reduce((s, b) => s + b.total, 0);
-  const totalVisited   = visitedAll.reduce((s, b) => s + b.persons, 0);
-  const totalPersons   = approvedAll.reduce((s, b) => s + b.persons, 0) - totalVisited;
-
-  const approvedForDate = bookingsForDate.filter(b => b.status === "approved");
-  const visitedForDate  = bookingsForDate.filter(b => b.used === true);
-  const dateRevenue    = approvedForDate.reduce((s, b) => s + b.total, 0);
-  const dateVisited    = visitedForDate.reduce((s, b) => s + b.persons, 0);
-  const datePersons    = approvedForDate.reduce((s, b) => s + b.persons, 0) - dateVisited;
+  const filtered    = bookings;
+  const totalPages  = Math.ceil(tableTotal / PAGE_SIZE);
 
   function prevMonth() {
     if (calMonth === 0) { setCalMonth(11); setCalYear(y => y - 1); }
@@ -155,10 +266,10 @@ export default function AdminDashboard() {
         <Typography variant="h5" fontWeight={800} mb={3} color="#1a2e1a">Overall Overview</Typography>
         <Grid container spacing={3} mb={4}>
           {[
-            { icon: <ConfirmationNumberIcon sx={{ fontSize: "2rem" }} />, label: "Approved Bookings", value: approvedAll.length, color: "#2e7d32" },
-            { icon: <PeopleIcon            sx={{ fontSize: "2rem" }} />, label: "Total Visitors",    value: totalPersons,       color: "#1565c0" },
-            { icon: <AttachMoneyIcon       sx={{ fontSize: "2rem" }} />, label: "Total Revenue",     value: `৳${totalRevenue}`, color: "#6a1b9a" },
-            { icon: <TourIcon              sx={{ fontSize: "2rem" }} />, label: "Total Visited",     value: totalVisited,       color: "#e65100" },
+            { icon: <ConfirmationNumberIcon sx={{ fontSize: "2rem" }} />, label: "Approved Bookings", value: stats.approved,         color: "#2e7d32" },
+            { icon: <PeopleIcon            sx={{ fontSize: "2rem" }} />, label: "Total Visitors",    value: stats.visitors,         color: "#1565c0" },
+            { icon: <AttachMoneyIcon       sx={{ fontSize: "2rem" }} />, label: "Total Revenue",     value: `৳${stats.revenue}`,   color: "#6a1b9a" },
+            { icon: <TourIcon              sx={{ fontSize: "2rem" }} />, label: "Total Visited",     value: stats.visited,          color: "#e65100" },
           ].map(s => (
             <Grid size={{ xs: 12, md: 3 }} key={s.label}>
               <StatCard {...s} />
@@ -221,10 +332,10 @@ export default function AdminDashboard() {
               <Divider sx={{ my: 2 }} />
               <Typography fontWeight={700} fontSize="0.75rem" color="text.secondary" mb={1.5}>{formatDisplay(selectedDate)}</Typography>
               {[
-                { label: "Approved", value: approvedForDate.length, sx: { bgcolor: "#e8f5e9", color: "#2e7d32" } },
-                { label: "Visitors", value: datePersons,            sx: { bgcolor: "#e3f2fd", color: "#1565c0" } },
-                { label: "Revenue",  value: `৳${dateRevenue}`,     sx: { bgcolor: "#f3e5f5", color: "#6a1b9a" } },
-                { label: "Visited",  value: dateVisited,            sx: { bgcolor: "#fff3e0", color: "#e65100" } },
+                { label: "Approved", value: dateStats.approved,         sx: { bgcolor: "#e8f5e9", color: "#2e7d32" } },
+                { label: "Visitors", value: dateStats.visitors,         sx: { bgcolor: "#e3f2fd", color: "#1565c0" } },
+                { label: "Revenue",  value: `৳${dateStats.revenue}`,   sx: { bgcolor: "#f3e5f5", color: "#6a1b9a" } },
+                { label: "Visited",  value: dateStats.visited,          sx: { bgcolor: "#fff3e0", color: "#e65100" } },
               ].map(r => (
                 <Box key={r.label} sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                   <Typography fontSize="0.82rem" color="text.secondary">{r.label}</Typography>
@@ -251,16 +362,22 @@ export default function AdminDashboard() {
                 <Typography variant="h6" fontWeight={800}>
                   {viewMode === "date" ? `Bookings — ${formatDisplay(selectedDate)}` : "All Bookings"}
                 </Typography>
-                <Typography color="text.secondary" fontSize="0.82rem">{filtered.length} booking{filtered.length !== 1 ? "s" : ""} found</Typography>
+                <Typography color="text.secondary" fontSize="0.82rem">
+                  {viewMode === "date" ? `${filtered.length} booking${filtered.length !== 1 ? "s" : ""}` : `${tableTotal} total`}
+                </Typography>
               </Box>
-              <TextField
-                placeholder="Search ID, name, phone..."
-                size="small"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                sx={{ width: { xs: "100%", sm: 260 } }}
-                InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: "#aaa", fontSize: "1rem" }} /></InputAdornment> }}
-              />
+              <Box component="form" onSubmit={handleSearch} sx={{ display: "flex", gap: 1 }}>
+                <TextField
+                  placeholder="Search ID, name, phone..."
+                  size="small"
+                  value={searchInput}
+                  onChange={e => setSearchInput(e.target.value)}
+                  sx={{ width: { xs: "100%", sm: 220 } }}
+                  InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: "#aaa", fontSize: "1rem" }} /></InputAdornment> }}
+                />
+                <Button type="submit" variant="contained" color="primary" size="small" sx={{ fontWeight: 700, px: 2 }}>Search</Button>
+                {search && <Button size="small" onClick={() => { setSearch(""); setSearchInput(""); setPage(0); }}>Clear</Button>}
+              </Box>
             </Box>
 
             {(deleted || actionMsg) && (
@@ -269,7 +386,9 @@ export default function AdminDashboard() {
               </Alert>
             )}
 
-            {filtered.length === 0 ? (
+            {tableLoading ? (
+              <Box sx={{ textAlign: "center", py: 6 }}><CircularProgress color="primary" /></Box>
+            ) : filtered.length === 0 ? (
               <Box sx={{ textAlign: "center", py: 8, bgcolor: "#fff", borderRadius: 2, border: "1.5px solid #f0f0f0" }}>
                 <InboxIcon sx={{ fontSize: "3rem", color: "#ddd" }} />
                 <Typography color="text.secondary" mt={1.5} fontWeight={600}>
@@ -277,11 +396,12 @@ export default function AdminDashboard() {
                 </Typography>
               </Box>
             ) : (
-              <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: "0 2px 12px rgba(0,0,0,0.07)", border: "1.5px solid #f0f0f0" }}>
+              <>
+                <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: "0 2px 12px rgba(0,0,0,0.07)", border: "1.5px solid #f0f0f0" }}>
                 <Table size="small">
                   <TableHead>
                     <TableRow sx={{ bgcolor: "#f1f8f1" }}>
-                      {["Booking ID", "Name", "Phone", "Persons", "Total", "TrxID", "Status", "Date", "Action"].map(h => (
+                      {["Booking ID", "Name", "Phone", "Persons", "Total", "Status"].map(h => (
                         <TableCell key={h} sx={{ fontWeight: 800, color: "#2e7d32", fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: 0.5, whiteSpace: "nowrap", py: 1.5, borderBottom: "1.5px solid #e8f5e9" }}>
                           {h}
                         </TableCell>
@@ -290,56 +410,40 @@ export default function AdminDashboard() {
                   </TableHead>
                   <TableBody>
                     {filtered.map((b, i) => (
-                      <TableRow key={b.id} sx={{ bgcolor: i % 2 === 0 ? "#fff" : "#fafff9", "&:hover": { bgcolor: "#f1f8f1" }, "& td": { borderBottom: "1px solid #f5f5f5" } }}>
+                      <TableRow key={b.id} sx={{ bgcolor: i % 2 === 0 ? "#fff" : "#fafff9", "&:hover": { bgcolor: "#f1f8f1" }, "& td": { borderBottom: "1px solid #f5f5f5", py: 1 } }}>
                         <TableCell>
                           <Chip label={b.id} size="small" color="primary" variant="outlined" sx={{ fontWeight: 700, fontSize: "0.7rem" }} />
                         </TableCell>
-                        <TableCell sx={{ fontWeight: 600, fontSize: "0.85rem" }}>{b.name}</TableCell>
-                        <TableCell sx={{ color: "text.secondary", fontSize: "0.82rem" }}>{b.phone}</TableCell>
-                        <TableCell>
-                          <Chip label={`${b.persons}p`} size="small" sx={{ bgcolor: "#e3f2fd", color: "#1565c0", fontWeight: 700, fontSize: "0.7rem" }} />
-                        </TableCell>
-                        <TableCell sx={{ fontWeight: 800, color: "#2e7d32", fontSize: "0.88rem" }}>৳{b.total}</TableCell>
-                        <TableCell sx={{ color: "text.secondary", fontSize: "0.75rem" }}>{b.trx_id || "—"}</TableCell>
+                        <TableCell sx={{ fontWeight: 600, fontSize: "0.82rem", whiteSpace: "nowrap" }}>{b.name}</TableCell>
+                        <TableCell sx={{ color: "text.secondary", fontSize: "0.8rem", whiteSpace: "nowrap" }}>{b.phone}</TableCell>
+                        <TableCell sx={{ fontWeight: 600, fontSize: "0.8rem", textAlign: "center" }}>{b.persons}</TableCell>
+                        <TableCell sx={{ fontWeight: 800, color: "#2e7d32", fontSize: "0.82rem", whiteSpace: "nowrap" }}>৳{b.total}</TableCell>
                         <TableCell><StatusChip status={b.status} /></TableCell>
-                        <TableCell sx={{ fontSize: "0.75rem", color: "text.secondary", whiteSpace: "nowrap" }}>{b.date}</TableCell>
-                        <TableCell>
-                          <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
-                            {(b.status || "pending") === "pending" && (
-                              <>
-                                <Button size="small" variant="contained" color="success"
-                                  disabled={approving === b.id}
-                                  onClick={() => handleApprove(b.id)}
-                                  sx={{ fontSize: "0.68rem", fontWeight: 700, borderRadius: 1.5, px: 1, minWidth: 0, py: 0.4 }}
-                                  startIcon={approving === b.id ? null : <CheckCircleIcon sx={{ fontSize: "0.85rem !important" }} />}
-                                >
-                                  {approving === b.id ? <CircularProgress size={10} color="inherit" /> : "Approve"}
-                                </Button>
-                                <Button size="small" variant="outlined" color="error"
-                                  disabled={approving === b.id}
-                                  onClick={() => handleReject(b.id)}
-                                  sx={{ fontSize: "0.68rem", fontWeight: 700, borderRadius: 1.5, px: 1, minWidth: 0, py: 0.4 }}
-                                  startIcon={<CancelIcon sx={{ fontSize: "0.85rem !important" }} />}
-                                >
-                                  Reject
-                                </Button>
-                              </>
-                            )}
-                            <IconButton size="small" onClick={() => handleDelete(b.id)}
-                              sx={{ color: "#e53935", "&:hover": { bgcolor: "#ffebee" }, p: 0.5 }}>
-                              <DeleteIcon sx={{ fontSize: "1rem" }} />
-                            </IconButton>
-                          </Box>
-                        </TableCell>
+
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </TableContainer>
+              {viewMode === "all" && totalPages > 1 && (
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 2, flexWrap: "wrap", gap: 1 }}>
+                  <Typography color="text.secondary" fontSize="0.78rem">
+                    Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, tableTotal)} of {tableTotal}
+                  </Typography>
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    <Button size="small" variant="outlined" disabled={page === 0} onClick={() => setPage(p => p - 1)}>← Prev</Button>
+                    <Typography sx={{ px: 1.5, py: 0.5, fontSize: "0.82rem", fontWeight: 700 }}>{page + 1} / {totalPages}</Typography>
+                    <Button size="small" variant="outlined" disabled={page + 1 >= totalPages} onClick={() => setPage(p => p + 1)}>Next →</Button>
+                  </Box>
+                </Box>
+              )}
+              </>
             )}
           </Grid>
         </Grid>
       </Container>
+
+      <BookingDetailModal booking={viewBooking} open={!!viewBooking} onClose={() => setViewBooking(null)} />
     </Box>
   );
 }

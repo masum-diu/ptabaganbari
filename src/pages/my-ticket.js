@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import Head from "next/head";
 import {
   Box, Container, Typography, TextField, Button,
   Chip, Divider, Alert, InputAdornment, CircularProgress,
@@ -15,11 +16,94 @@ import CancelIcon      from "@mui/icons-material/Cancel";
 import HourglassTopIcon from "@mui/icons-material/HourglassTop";
 import BlockIcon       from "@mui/icons-material/Block";
 import VisibilityIcon  from "@mui/icons-material/Visibility";
-import CloseIcon       from "@mui/icons-material/Close";
+import CloseIcon        from "@mui/icons-material/Close";
+import DownloadIcon     from "@mui/icons-material/Download";
+import { QRCodeSVG }   from "qrcode.react";
 import supabase from "@/lib/supabase";
+
+function fmtDate(iso) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleString("en-BD", {
+    day: "2-digit", month: "short", year: "numeric",
+    hour: "2-digit", minute: "2-digit", hour12: true,
+  });
+}
+
+/* ── Hidden print view for PDF ── */
+function TicketPrintView({ ticket, printRef }) {
+  const isVisited = ticket.used;
+  const headerBg  = isVisited ? "#1565c0" : "#2e7d32";
+  const rows = [
+    ["Name",    ticket.name],
+    ["Phone",   ticket.phone],
+    ["Persons", `${ticket.persons} ${ticket.persons === 1 ? "Person" : "Persons"}`],
+    ["Total",   `\u09F3${ticket.total}`],
+    ["TrxID",   ticket.trx_id || "\u2014"],
+    ["bKash",   ticket.bkash_number || "\u2014"],
+  ];
+  const qrValue = JSON.stringify({ id: ticket.id, phone: ticket.phone, name: ticket.name });
+  return (
+    <div ref={printRef} style={{
+      position: "fixed", left: "-9999px", top: 0,
+      width: 360, background: "#fff", fontFamily: "Arial, sans-serif",
+      border: `2px solid ${isVisited ? "#90caf9" : "#c8e6c9"}`, borderRadius: 12, overflow: "hidden",
+    }}>
+      {/* header */}
+      <div style={{ background: headerBg, padding: "20px 24px", color: "#fff" }}>
+        <div style={{ fontSize: 18, fontWeight: 800 }}>{ticket.id}</div>
+        <div style={{ fontSize: 12, opacity: 0.8 }}>{ticket.date}</div>
+        <div style={{ marginTop: 6, display: "inline-block", background: "rgba(255,255,255,0.2)", borderRadius: 6, padding: "2px 10px", fontSize: 11, fontWeight: 800, letterSpacing: 1 }}>
+          {isVisited ? "VISITED" : "VALID"}
+        </div>
+      </div>
+      {/* dashed tear */}
+      <div style={{ borderTop: `2px dashed ${isVisited ? "#90caf9" : "#c8e6c9"}`, margin: "0 16px", opacity: 0.5 }} />
+      {/* body */}
+      <div style={{ padding: "20px 24px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 16px", marginBottom: 16 }}>
+          {rows.map(([label, value]) => (
+            <div key={label}>
+              <div style={{ fontSize: 10, color: "#999", marginBottom: 2 }}>{label}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: label === "Total" ? "#2e7d32" : "#111" }}>{value}</div>
+            </div>
+          ))}
+        </div>
+        <hr style={{ borderColor: "#eee", margin: "12px 0" }} />
+        {/* QR code centered */}
+        <div style={{ textAlign: "center", padding: "8px 0" }}>
+          <QRCodeSVG value={qrValue} size={120} level="M" />
+          <div style={{ fontSize: 10, color: "#aaa", marginTop: 6 }}>Scan to verify ticket</div>
+        </div>
+        <div style={{ marginTop: 12, background: isVisited ? "#e3f2fd" : "#e8f5e9", borderRadius: 8, padding: "10px 14px", fontSize: 12 }}>
+          {isVisited
+            ? <><strong>Resort Visited!</strong> You visited on {fmtDate(ticket.used_at)}.</>
+            : <><strong>Valid Ticket!</strong> Show this at the entrance gate to enter.</>}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /* ── Ticket Detail Dialog ── */
 function TicketDialog({ ticket, open, onClose }) {
+  const printRef = useRef(null);
+  const [downloading, setDownloading] = useState(false);
+
+  async function handleDownload() {
+    if (!printRef.current) return;
+    setDownloading(true);
+    const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+      import("html2canvas"),
+      import("jspdf"),
+    ]);
+    const canvas = await html2canvas(printRef.current, { scale: 2, useCORS: true, backgroundColor: "#fff" });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({ unit: "px", format: [canvas.width / 2, canvas.height / 2] });
+    pdf.addImage(imgData, "PNG", 0, 0, canvas.width / 2, canvas.height / 2);
+    pdf.save(`ticket-${ticket.id}.pdf`);
+    setDownloading(false);
+  }
+
   if (!ticket) return null;
   const isVisited = ticket.used;
   return (
@@ -45,6 +129,9 @@ function TicketDialog({ ticket, open, onClose }) {
               {isVisited ? "VISITED" : "VALID"}
             </Typography>
           </Box>
+          <IconButton onClick={handleDownload} size="small" sx={{ color: "rgba(255,255,255,0.8)" }} disabled={downloading} title="Download PDF">
+            {downloading ? <CircularProgress size={16} color="inherit" /> : <DownloadIcon fontSize="small" />}
+          </IconButton>
           <IconButton onClick={onClose} size="small" sx={{ color: "rgba(255,255,255,0.8)" }}>
             <CloseIcon fontSize="small" />
           </IconButton>
@@ -85,7 +172,7 @@ function TicketDialog({ ticket, open, onClose }) {
 
         {isVisited ? (
           <Alert severity="info" icon={<CheckCircleIcon fontSize="small" />} sx={{ borderRadius: 2, fontSize: "0.82rem" }}>
-            <strong>Resort Visited!</strong> You visited on {ticket.used_at || "—"}.
+            <strong>Resort Visited!</strong> You visited on {fmtDate(ticket.used_at)}.
           </Alert>
         ) : (
           <Alert severity="success" icon={<ConfirmationNumberIcon fontSize="small" />} sx={{ borderRadius: 2, fontSize: "0.82rem" }}>
@@ -93,6 +180,7 @@ function TicketDialog({ ticket, open, onClose }) {
           </Alert>
         )}
       </DialogContent>
+      <TicketPrintView ticket={ticket} printRef={printRef} />
     </Dialog>
   );
 }
@@ -210,6 +298,14 @@ export default function MyTicket() {
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
+      <Head>
+        <title>My Tickets — PTA BaganBari Resort</title>
+        <meta name="description" content="View and download your PTA BaganBari Resort booking tickets. Enter your phone number to find all your approved, pending and rejected bookings." />
+        <meta name="keywords" content="my ticket PTA BaganBari, booking status, resort ticket Bangladesh" />
+        <meta property="og:title" content="My Tickets — PTA BaganBari Resort" />
+        <meta property="og:description" content="Check your booking status and download your ticket for PTA BaganBari Resort." />
+        <meta name="robots" content="index, follow" />
+      </Head>
 
       {/* ── HERO ── */}
       <Box sx={{ position: "relative", height: 280, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>

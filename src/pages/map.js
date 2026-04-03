@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { Box, Container, Typography, Grid, Chip, Button } from "@mui/material";
 
 const INFO = [
@@ -25,6 +26,14 @@ const LANDMARKS = [
 export default function MapPage() {
   return (
     <Box>
+      <Head>
+        <title>Location — PTA BaganBari Resort, Kasba, Brahmanbaria</title>
+        <meta name="description" content="Find PTA BaganBari Resort on the map. Located in Loxmipur, Kasba, Brahmanbaria, Bangladesh. Get directions, contact info and opening hours." />
+        <meta name="keywords" content="PTA BaganBari location, Kasba Brahmanbaria map, resort directions Bangladesh" />
+        <meta property="og:title" content="Location — PTA BaganBari Resort" />
+        <meta property="og:description" content="Find us at Loxmipur PTA Baganbari, Kasba, Brahmanbaria, Bangladesh." />
+        <meta name="robots" content="index, follow" />
+      </Head>
       {/* ── PAGE HERO ── */}
       <Box sx={{ position: "relative", height: 300, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
         <Box component="img"
