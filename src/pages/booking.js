@@ -1,4 +1,5 @@
 // ./src/pages/booking.js
+import Head from "next/head";
 import { useState } from "react";
 import {
   Box, Container, Typography, TextField, Button,
@@ -6,7 +7,7 @@ import {
 } from "@mui/material";
 import supabase from "@/lib/supabase";
 
-const PRICE_PER_PERSON = 25;
+const PRICE_PER_PERSON = 50;
 
 // Generate unique booking ID
 function genBookingId() {
@@ -57,7 +58,6 @@ export default function Booking() {
       bkash_number: form.payment.bkashNumber,
       trx_id: form.payment.trxID,
       status: "pending",
-       status: "pending",
     };
 
     // Insert into Supabase
@@ -65,8 +65,8 @@ export default function Booking() {
     setLoading(false);
 
     if (error) {
-      console.log("Supabase insert error:", error);
-      setErrors({ name: "Booking failed. Please try again." });
+      console.error("Supabase insert error:", error);
+      setErrors({ submit: error.message || "Booking failed. Please try again." });
       return;
     }
 
@@ -82,138 +82,142 @@ export default function Booking() {
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
+      <Head>
+        <title>Book a Ticket — PTA BaganBari Resort</title>
+        <meta name="description" content="Book your visit to PTA BaganBari Resort online. Only ৳25 per person. Fill in your details and pay via bKash to confirm your ticket instantly." />
+        <meta name="keywords" content="book ticket PTA BaganBari, resort booking Bangladesh, bKash payment, Brahmanbaria resort ticket" />
+        <meta property="og:title" content="Book a Ticket — PTA BaganBari Resort" />
+        <meta property="og:description" content="Book your resort visit online for just ৳25 per person. Pay via bKash." />
+        <meta name="robots" content="index, follow" />
+      </Head>
 
       {/* HERO */}
-      <Box sx={{ position: "relative", height: 280, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+      <Box sx={{ position: "relative", height: { xs: 180, md: 280 }, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
         <Box component="img"
           src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=1600&q=85"
           alt="booking hero"
           sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }}
         />
         <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,40,0,0.78))", zIndex: 1 }} />
-        <Box sx={{ position: "relative", zIndex: 2, textAlign: "center" }}>
-          <Chip label="🎫 Online Booking"
-            sx={{ bgcolor: "rgba(165,214,167,0.18)", color: "primary.light", border: "1px solid rgba(165,214,167,0.4)", mb: 2 }}
-          />
-          <Typography variant="h3" color="#fff" sx={{ textShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>
-            Book Your Visit
+        <Box sx={{ position: "relative", zIndex: 2, textAlign: "center", px: 2 }}>
+          <Typography variant="h4" color="#fff" fontWeight={800} sx={{ textShadow: "0 4px 20px rgba(0,0,0,0.5)", fontSize: { xs: "1.5rem", md: "2.5rem" } }}>
+            🌿 Book Your Visit
           </Typography>
-          <Typography color="rgba(255,255,255,0.8)" mt={1.5} fontSize="1.05rem">
+          <Typography color="rgba(255,255,255,0.85)" mt={1} fontSize={{ xs: "0.88rem", md: "1.05rem" }}>
             ৳{PRICE_PER_PERSON} per person — PTA BaganBari Resort
           </Typography>
         </Box>
       </Box>
 
       {/* CONTENT */}
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-         <Box sx={{ background: "linear-gradient(135deg,#1b5e20,#2e7d32)", borderRadius: 2, p: 4, color: "#fff" }}>
-                <Typography fontWeight={700} fontSize="0.85rem" sx={{ opacity: 0.8, mb: 1, letterSpacing: 1 }}>TICKET PRICE</Typography>
-                <Typography variant="h2" color="#fff">৳{PRICE_PER_PERSON}</Typography>
-                <Typography sx={{ opacity: 0.85, mt: 0.5 }}>per person</Typography>
-                <Divider sx={{ my: 2, borderColor: "rgba(255,255,255,0.2)" }} />
-                <Typography fontSize="0.85rem" sx={{ opacity: 0.8 }}>
-                  🕐 Open: Sat–Thu 8AM–6PM<br />
-                  📍 Loxmipur PTA Baganbari, Kasba, Brahmanbaria, Bangladesh
-                </Typography>
+      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 }, px: { xs: 1.5, md: 3 } }}>
+
+        {/* Price + Info bar */}
+        <Box sx={{
+          background: "linear-gradient(135deg,#1b5e20,#2e7d32)",
+          borderRadius: 2, mb: { xs: 2, md: 3 }, overflow: "hidden",
+          boxShadow: "0 4px 20px rgba(46,125,50,0.25)",
+        }}>
+          <Box sx={{ px: { xs: 2.5, md: 4 }, py: { xs: 2, md: 2.5 }, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 1 }}>
+            {/* left */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Box sx={{ width: { xs: 48, md: 56 }, height: { xs: 48, md: 56 }, borderRadius: 2, bgcolor: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: { xs: "1.5rem", md: "1.8rem" }, flexShrink: 0 }}>
+                🎫
               </Box>
-        <Grid container spacing={5} justifyContent="center">
+              <Box>
+                <Typography fontSize="0.68rem" color="rgba(255,255,255,0.65)" letterSpacing={1.5} fontWeight={700}>ENTRY TICKET</Typography>
+                <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+                  <Typography fontWeight={900} fontSize={{ xs: "2rem", md: "2.4rem" }} color="#fff" lineHeight={1}>৳{PRICE_PER_PERSON}</Typography>
+                  <Typography fontSize="0.8rem" color="rgba(255,255,255,0.7)">/person</Typography>
+                </Box>
+              </Box>
+            </Box>
+            {/* right — info pills */}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.8 }}>
+              {[
+                // { icon: "🕐", text: "Sat–Thu  8AM – 6PM" },
+                { icon: "📍", text: "Loxmipur, Kasba, Brahmanbaria" },
+              ].map(r => (
+                <Box key={r.text} sx={{ display: "flex", alignItems: "center", gap: 1, bgcolor: "rgba(255,255,255,0.12)", borderRadius: 5, px: 1.5, py: 0.4 }}>
+                  <Typography fontSize="0.75rem">{r.icon}</Typography>
+                  <Typography fontSize="0.72rem" color="rgba(255,255,255,0.9)" fontWeight={600}>{r.text}</Typography>
+                </Box>
+              ))}
+            </Box>
+          </Box>
+          {/* bottom accent strip */}
+          <Box sx={{ height: 4, background: "linear-gradient(90deg,#a5d6a7,#66bb6a,#a5d6a7)" }} />
+        </Box>
+
+        <Grid container spacing={{ xs: 2, md: 4 }}>
 
           {/* FORM / CONFIRMATION */}
-          <Grid size={{ xs: 12, md: 7 }}>
+          <Grid size={{ xs: 12, md: 7 }} sx={{ order: { xs: 2, md: 1 } }}>
             {!confirmed ? (
-              <Box sx={{ bgcolor: "background.paper", borderRadius: 2, boxShadow: "0 8px 40px rgba(46,125,50,0.10)", p: { xs: 3, md: 5 }, border: "1.5px solid", borderColor: "divider" }}>
-                <Chip label="Visitor Details" color="primary" sx={{ mb: 2 }} />
-                <Typography variant="h5" mb={0.5}>Fill in Your Details</Typography>
-                <Typography color="text.secondary" fontSize="0.88rem" mb={4}>
+              <Box sx={{ bgcolor: "background.paper", borderRadius: 2, boxShadow: "0 4px 20px rgba(46,125,50,0.08)", p: { xs: 2, md: 4 }, border: "1.5px solid", borderColor: "divider" }}>
+                <Typography variant="h6" fontWeight={800} mb={0.5} fontSize={{ xs: "1rem", md: "1.25rem" }}>Fill in Your Details</Typography>
+                <Typography color="text.secondary" fontSize="0.82rem" mb={2.5}>
                   Complete the form below to confirm your booking
                 </Typography>
 
-                <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                  <TextField
-                    label="Full Name"
-                    placeholder="e.g. Rahim Uddin"
+                <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <TextField size="small"
+                    label="Full Name" placeholder="e.g. Rahim Uddin"
                     value={form.name}
                     onChange={(e) => { setForm(f => ({ ...f, name: e.target.value })); setErrors(er => ({ ...er, name: "" })); }}
-                    error={!!errors.name}
-                    helperText={errors.name}
+                    error={!!errors.name} helperText={errors.name}
                     fullWidth
                     InputProps={{ startAdornment: <Box sx={{ mr: 1 }}>👤</Box> }}
                   />
-                  <TextField
-                    label="Phone Number"
-                    placeholder="e.g. 01712345678"
+                  <TextField size="small"
+                    label="Phone Number" placeholder="e.g. 01712345678"
                     value={form.phone}
                     onChange={(e) => { setForm(f => ({ ...f, phone: e.target.value })); setErrors(er => ({ ...er, phone: "" })); }}
-                    error={!!errors.phone}
-                    helperText={errors.phone || "Bangladesh mobile number"}
-                    fullWidth
-                    inputProps={{ maxLength: 11 }}
+                    error={!!errors.phone} helperText={errors.phone || "Bangladesh mobile number"}
+                    fullWidth inputProps={{ maxLength: 11 }}
                     InputProps={{ startAdornment: <Box sx={{ mr: 1 }}>📞</Box> }}
                   />
-                  <TextField
-                    select
+                  <TextField size="small" select
                     label="Number of Persons"
                     value={form.persons}
                     onChange={(e) => setForm(f => ({ ...f, persons: Number(e.target.value) }))}
                     fullWidth
                     InputProps={{ startAdornment: <Box sx={{ mr: 1 }}>👥</Box> }}
-                    SelectProps={{
-                      MenuProps: {
-                        PaperProps: {
-                          style: {
-                            maxHeight: 200,   // 👈 scroll height (adjustable)
-                          },
-                        },
-                      },
-                    }}
-                                      >
+                    SelectProps={{ MenuProps: { PaperProps: { style: { maxHeight: 200 } } } }}
+                  >
                     {[...Array(20)].map((_, i) => (
-                      <MenuItem key={i + 1} value={i + 1}>
-                        {i + 1} {i === 0 ? "Person" : "Persons"}
-                      </MenuItem>
+                      <MenuItem key={i + 1} value={i + 1}>{i + 1} {i === 0 ? "Person" : "Persons"}</MenuItem>
                     ))}
                   </TextField>
-
-                  {/* bKash Payment */}
-                  <TextField
-                    label="bKash Send Money Number"
-                    placeholder="e.g. 017XXXXXXXX"
+                  <TextField size="small"
+                    label="bKash Send Money Number" placeholder="e.g. 017XXXXXXXX"
                     value={form.payment.bkashNumber}
-                    onChange={(e) => setForm(f => ({ ...f, payment: { ...f.payment, bkashNumber: e.target.value } })) }
-                    error={!!errors.bkashNumber}
-                    helperText={errors.bkashNumber || "Number used to send payment"}
+                    onChange={(e) => setForm(f => ({ ...f, payment: { ...f.payment, bkashNumber: e.target.value } }))}
+                    error={!!errors.bkashNumber} helperText={errors.bkashNumber || "Number used to send payment"}
                     fullWidth
                     InputProps={{ startAdornment: <Box sx={{ mr: 1 }}>💸</Box> }}
                   />
-                  <TextField
-                    label="Transaction ID (trxID)"
-                    placeholder="e.g. TX123456789"
+                  <TextField size="small"
+                    label="Transaction ID (trxID)" placeholder="e.g. TX123456789"
                     value={form.payment.trxID}
-                    onChange={(e) => setForm(f => ({ ...f, payment: { ...f.payment, trxID: e.target.value } })) }
-                    error={!!errors.trxID}
-                    helperText={errors.trxID || "bKash transaction ID"}
+                    onChange={(e) => setForm(f => ({ ...f, payment: { ...f.payment, trxID: e.target.value } }))}
+                    error={!!errors.trxID} helperText={errors.trxID || "bKash transaction ID"}
                     fullWidth
                     InputProps={{ startAdornment: <Box sx={{ mr: 1 }}>🔑</Box> }}
                   />
 
                   {/* Price Summary */}
-                  <Box sx={{ bgcolor: "secondary.dark", borderRadius: 3, p: 3, border: "1.5px solid", borderColor: "primary.light" }}>
-                    <Typography fontWeight={700} mb={2} color="primary.main">💰 Price Summary</Typography>
-                    {[{ label: "Price per person", value: `৳${PRICE_PER_PERSON}` }, { label: "Number of persons", value: `× ${form.persons}` }]
-                      .map((r) => (
-                        <Box key={r.label} sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                          <Typography color="text.secondary" fontSize="0.9rem">{r.label}</Typography>
-                          <Typography fontWeight={600}>{r.value}</Typography>
-                        </Box>
-                      ))}
-                    <Divider sx={{ my: 1.5, borderColor: "primary.light" }} />
-                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                      <Typography fontWeight={800} fontSize="1.05rem">Total Amount</Typography>
-                      <Typography fontWeight={800} fontSize="1.4rem" color="primary.main">৳{total}</Typography>
+                  <Box sx={{ bgcolor: "secondary.dark", borderRadius: 2, p: 2, border: "1.5px solid", borderColor: "primary.light" }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
+                      <Typography color="text.secondary" fontSize="0.85rem">৳{PRICE_PER_PERSON} × {form.persons} person{form.persons > 1 ? "s" : ""}</Typography>
+                      <Typography fontWeight={800} fontSize="1.2rem" color="primary.main">৳{total}</Typography>
                     </Box>
+                    <Typography fontSize="0.75rem" color="text.secondary">Total Amount</Typography>
                   </Box>
 
-                  <Button type="submit" variant="contained" color="primary" size="large" fullWidth sx={{ py: 1.6, fontSize: "1rem" }} disabled={loading}>
+                  {errors.submit && <Alert severity="error" sx={{ borderRadius: 2 }}>{errors.submit}</Alert>}
+                  <Button type="submit" variant="contained" color="primary" size="large" fullWidth
+                    sx={{ py: { xs: 1.3, md: 1.6 }, fontSize: "1rem", fontWeight: 800 }} disabled={loading}>
                     {loading ? <CircularProgress size={22} color="inherit" /> : `✅ Confirm Booking — ৳${total}`}
                   </Button>
                 </Box>
@@ -265,19 +269,61 @@ export default function Booking() {
           </Grid>
 
           {/* INFO PANEL */}
-          <Grid size={{ xs: 12, md: 5 }}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              <Box sx={{ bgcolor: "background.paper", borderRadius: 2, p: 4, border: "1.5px solid", borderColor: "divider", boxShadow: "0 4px 20px rgba(46,125,50,0.07)" }}>
-                <Chip label="Why Visit Us?" color="primary" sx={{ mb: 2 }} />
-                <Typography variant="h6" mb={2}>What's Included</Typography>
-                {[{ icon: "🌿", text: "Full day access to all nature trails" },
+          <Grid size={{ xs: 12, md: 5 }} sx={{ order: { xs: 1, md: 2 } }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+
+              {/* ── PAYMENT INSTRUCTION ── */}
+              <Box sx={{ borderRadius: 2, overflow: "hidden", boxShadow: "0 4px 24px rgba(229,57,53,0.12)", border: "2px solid #f48fb1" }}>
+                <Box sx={{ background: "linear-gradient(135deg,#e91e63,#c2185b)", px: 2.5, py: 2, display: "flex", alignItems: "center", gap: 1.5 }}>
+                  <Typography fontSize="1.4rem">💸</Typography>
+                  <Box>
+                    <Typography fontWeight={800} color="#fff" fontSize="0.95rem">Payment Instructions</Typography>
+                    <Typography color="rgba(255,255,255,0.8)" fontSize="0.72rem">Send money before booking</Typography>
+                  </Box>
+                </Box>
+                <Box sx={{ bgcolor: "#fff", p: { xs: 2, md: 3 } }}>
+                  {[
+                    { n: 1, title: "Open bKash / Nagad App",  desc: 'Go to "Send Money" option' },
+                    { n: 3, title: "Send exact amount",        desc: "৳25 × number of persons = total" },
+                    { n: 4, title: "Copy Transaction ID",      desc: "Paste the TrxID in the form" },
+                  ].map(s => (
+                    <Box key={s.n} sx={{ display: "flex", gap: 1.5, mb: 2 }}>
+                      <Box sx={{ width: 26, height: 26, borderRadius: "50%", bgcolor: "#fce4ec", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontWeight: 800, color: "#c2185b", fontSize: "0.78rem" }}>{s.n}</Box>
+                      <Box>
+                        <Typography fontWeight={700} fontSize="0.85rem">{s.title}</Typography>
+                        <Typography color="text.secondary" fontSize="0.78rem">{s.desc}</Typography>
+                      </Box>
+                    </Box>
+                  ))}
+
+                  {/* bKash number highlight */}
+                  <Box sx={{ bgcolor: "#fce4ec", borderRadius: 2, px: 2, py: 1.5, border: "2px dashed #f48fb1", display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+                    <Box>
+                      <Typography fontSize="0.68rem" color="#c2185b" fontWeight={700} letterSpacing={1}>bKash / Nagad / Rocket</Typography>
+                      <Typography fontWeight={800} fontSize={{ xs: "1.3rem", md: "1.4rem" }} color="#c2185b" letterSpacing={2}>01623325407</Typography>
+                    </Box>
+                    <Typography fontSize="1.6rem">📱</Typography>
+                  </Box>
+
+                  <Box sx={{ bgcolor: "#fff8e1", borderRadius: 2, p: 1.5, border: "1px solid #ffe082" }}>
+                    <Typography fontSize="0.75rem" color="#f57f17">⚠️ Booking confirmed after admin payment verification.</Typography>
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* ── WHY VISIT US ── */}
+              <Box sx={{ display: { xs: "none", md: "block" }, bgcolor: "background.paper", borderRadius: 2, p: { xs: 2, md: 3 }, border: "1.5px solid", borderColor: "divider" }}>
+                <Typography fontWeight={800} fontSize="0.95rem" color="primary.main" mb={1.5}>🌿 What's Included</Typography>
+                {[
+                  { icon: "🌿", text: "Full day access to all nature trails" },
                   { icon: "🏕️", text: "Picnic & camping area access" },
                   { icon: "📸", text: "Scenic photography spots" },
                   { icon: "🍃", text: "Guided eco walk" },
-                  { icon: "🅿️", text: "Free parking on premises" }].map((item) => (
-                  <Box key={item.text} sx={{ display: "flex", alignItems: "center", gap: 1.5, py: 1, borderBottom: "1px solid", borderColor: "divider" }}>
-                    <Typography fontSize="1.2rem">{item.icon}</Typography>
-                    <Typography fontSize="0.88rem" color="text.secondary">{item.text}</Typography>
+                  { icon: "🅿️", text: "Free parking on premises" },
+                ].map(item => (
+                  <Box key={item.text} sx={{ display: "flex", alignItems: "center", gap: 1.5, py: 0.8, borderBottom: "1px solid", borderColor: "divider" }}>
+                    <Typography fontSize="1rem">{item.icon}</Typography>
+                    <Typography fontSize="0.82rem" color="text.secondary">{item.text}</Typography>
                   </Box>
                 ))}
               </Box>

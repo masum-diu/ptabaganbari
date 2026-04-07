@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { Box, Container, Typography, Grid, Chip, Divider } from "@mui/material";
 
 const STATS = [
@@ -23,6 +24,14 @@ const VALUES = [
 export default function About() {
   return (
     <Box>
+      <Head>
+        <title>About Us — PTA BaganBari Resort</title>
+        <meta name="description" content="Learn about PTA BaganBari Resort — our story, values, and the team behind Bangladesh's favourite eco tourism destination in Kasba, Brahmanbaria." />
+        <meta name="keywords" content="about PTA BaganBari, eco resort Bangladesh, Brahmanbaria tourism, resort team" />
+        <meta property="og:title" content="About PTA BaganBari Resort" />
+        <meta property="og:description" content="Our story, values and team behind PTA BaganBari Resort, Kasba, Brahmanbaria." />
+        <meta name="robots" content="index, follow" />
+      </Head>
       {/* ── PAGE HERO ── */}
       <Box sx={{ position: "relative", height: 360, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
         <Box component="img"

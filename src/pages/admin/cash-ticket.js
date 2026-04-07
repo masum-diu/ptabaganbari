@@ -10,7 +10,7 @@ import PhoneIcon    from "@mui/icons-material/Phone";
 import PeopleIcon   from "@mui/icons-material/People";
 import supabase from "@/lib/supabase";
 
-const PRICE = 25;
+const PRICE = 50;
 function genId() { return "BK-" + Date.now().toString().slice(-7); }
 
 export default function CashTicket() {

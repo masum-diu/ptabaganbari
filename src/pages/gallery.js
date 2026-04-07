@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { useState } from "react";
 import { Box, Container, Typography, Chip, Grid } from "@mui/material";
 
@@ -26,6 +27,14 @@ export default function Gallery() {
 
   return (
     <Box>
+      <Head>
+        <title>Photo Gallery — PTA BaganBari Resort</title>
+        <meta name="description" content="Explore the beauty of PTA BaganBari Resort through our photo gallery. Nature trails, waterfalls, camping spots and village life in Kasba, Brahmanbaria." />
+        <meta name="keywords" content="PTA BaganBari gallery, resort photos Bangladesh, nature photography, Brahmanbaria" />
+        <meta property="og:title" content="Photo Gallery — PTA BaganBari Resort" />
+        <meta property="og:description" content="Browse stunning photos of PTA BaganBari Resort — nature, water, activities and village life." />
+        <meta name="robots" content="index, follow" />
+      </Head>
       {/* ── PAGE HERO ── */}
       <Box sx={{ position: "relative", height: 340, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
         <Box component="img"

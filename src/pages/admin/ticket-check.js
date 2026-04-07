@@ -17,6 +17,14 @@ import VisibilityIcon         from "@mui/icons-material/Visibility";
 import CloseIcon              from "@mui/icons-material/Close";
 import supabase from "@/lib/supabase";
 
+function fmtDate(iso) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleString("en-BD", {
+    day: "2-digit", month: "short", year: "numeric",
+    hour: "2-digit", minute: "2-digit", hour12: true,
+  });
+}
+
 /* ── Ticket Detail Dialog with Entry Toggle ── */
 function TicketDialog({ ticket, open, onClose, onToggle, toggling }) {
   if (!ticket) return null;
@@ -100,7 +108,7 @@ function TicketDialog({ ticket, open, onClose, onToggle, toggling }) {
                 </Typography>
               </Box>
               <Typography color="text.secondary" fontSize="0.78rem">
-                {isUsed ? `Visited on: ${ticket.used_at}` : "Toggle ON to allow entry. Cannot be undone."}
+                {isUsed ? `Visited on: ${fmtDate(ticket.used_at)}` : "Toggle ON to allow entry. Cannot be undone."}
               </Typography>
             </Box>
             <Switch
@@ -217,7 +225,7 @@ export default function TicketCheck() {
   async function handleToggle(ticket) {
     if (ticket.used) return;
     setToggling(ticket.id);
-    const usedAt = new Date().toLocaleString("en-BD", { dateStyle: "full", timeStyle: "short" });
+    const usedAt = new Date().toISOString();
     const { error } = await supabase
       .from("bookings")
       .update({ used: true, used_at: usedAt })

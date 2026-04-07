@@ -1,3 +1,4 @@
+import Head from "next/head";
 import {
   Box, Container, Typography, Button,
   Grid, Card, CardContent, CardActions, Chip,
@@ -21,6 +22,15 @@ const FEATURES = [
 export default function Home() {
   return (
     <Box>
+      <Head>
+        <title>PTA BaganBari Resort — Eco Tourism in Brahmanbaria, Bangladesh</title>
+        <meta name="description" content="Visit PTA BaganBari Resort in Kasba, Brahmanbaria. Enjoy eco trails, camping, scenic views and nature activities. Book your ticket online for just ৳25 per person." />
+        <meta name="keywords" content="PTA BaganBari, resort Bangladesh, eco tourism, Brahmanbaria, Kasba resort, nature resort, book ticket" />
+        <meta property="og:title" content="PTA BaganBari Resort — Eco Tourism Bangladesh" />
+        <meta property="og:description" content="Escape the city and explore green trails at PTA BaganBari Resort, Kasba, Brahmanbaria." />
+        <meta property="og:type" content="website" />
+        <meta name="robots" content="index, follow" />
+      </Head>
       {/* ── HERO ── */}
       <Box sx={{ height: "92vh", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", overflow: "hidden" }}>
         <Box component="img"
