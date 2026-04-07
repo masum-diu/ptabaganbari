@@ -314,8 +314,8 @@ export default function Booking() {
                         display: "flex", alignItems: "center", justifyContent: "space-between",
                       }}>
                         <Box>
-                          <Typography fontSize="0.7rem" color="#c2185b" fontWeight={700} letterSpacing={1}>bKash / Nagad / Rocket</Typography>
-                          <Typography fontWeight={800} fontSize="1.4rem" color="#c2185b" letterSpacing={2}>01623325407</Typography>
+                          <Typography fontSize="0.7rem" color="#c2185b" fontWeight={700} letterSpacing={1}>bKash</Typography>
+                          <Typography fontWeight={800} fontSize="1.4rem" color="#c2185b" letterSpacing={2}>01974-500611</Typography>
                         </Box>
                         <Typography fontSize="1.8rem">📱</Typography>
                       </Box>

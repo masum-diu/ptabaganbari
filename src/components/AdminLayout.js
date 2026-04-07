@@ -55,7 +55,7 @@ export default function AdminLayout({ children }) {
             <Typography fontWeight={800} color="#1b5e20" fontSize="0.92rem" lineHeight={1.2}>
               Admin Panel
             </Typography>
-            <Typography fontSize="0.68rem" color="#aaa">PTA BaganBari</Typography>
+            <Typography fontSize="0.68rem" color="#aaa">PTA Agro Park</Typography>
           </Box>
         </Box>
       </Box>
@@ -128,7 +128,7 @@ export default function AdminLayout({ children }) {
       {/* Bottom info */}
       <Box sx={{ px: 3, pb: 2.5, borderTop: "1px solid #f5f5f5", pt: 2 }}>
         <Typography fontSize="0.65rem" color="#ccc" lineHeight={1.8}>
-          © 2026 PTA BaganBari Resort<br />Admin v1.0
+          © 2026 PTA Agro Park<br />Admin v1.0
         </Typography>
       </Box>
     </Box>
@@ -172,7 +172,7 @@ export default function AdminLayout({ children }) {
                 {currentPage?.label || "Admin"}
               </Typography>
               <Typography fontSize="0.7rem" color="#bbb">
-                PTA BaganBari Resort Management
+                PTA Agro Park Management
               </Typography>
             </Box>
           </Box>

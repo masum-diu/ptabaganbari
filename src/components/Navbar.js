@@ -30,7 +30,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" style={{ textDecoration: "none" }}>
             <Typography fontWeight={800} fontSize="1.2rem" color="primary.light" sx={{ cursor: "pointer", letterSpacing: 0.5 }}>
-              🌿 PTA BaganBari
+              🌿 PTA Agro Park
             </Typography>
           </Link>
 
@@ -78,7 +78,7 @@ export default function Navbar() {
         {/* Drawer Header */}
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 3, py: 2.5, bgcolor: "#1b2e1b" }}>
           <Typography fontWeight={800} color="primary.light" fontSize="1.1rem">
-            🌿 PTA BaganBari
+            🌿 PTA Agro Park
           </Typography>
           <IconButton onClick={() => setDrawerOpen(false)} sx={{ color: "#fff" }}>
             <CloseIcon />
