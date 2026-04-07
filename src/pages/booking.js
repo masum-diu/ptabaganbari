@@ -83,10 +83,10 @@ export default function Booking() {
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
       <Head>
-        <title>Book a Ticket — PTA BaganBari Resort</title>
-        <meta name="description" content="Book your visit to PTA BaganBari Resort online. Only ৳25 per person. Fill in your details and pay via bKash to confirm your ticket instantly." />
+        <title>Book a Ticket — PTA Agro Park</title>
+        <meta name="description" content="Book your visit to PTA Agro Park online. Only ৳25 per person. Fill in your details and pay via bKash to confirm your ticket instantly." />
         <meta name="keywords" content="book ticket PTA BaganBari, resort booking Bangladesh, bKash payment, Brahmanbaria resort ticket" />
-        <meta property="og:title" content="Book a Ticket — PTA BaganBari Resort" />
+        <meta property="og:title" content="Book a Ticket — PTA Agro Park" />
         <meta property="og:description" content="Book your resort visit online for just ৳25 per person. Pay via bKash." />
         <meta name="robots" content="index, follow" />
       </Head>
@@ -104,7 +104,7 @@ export default function Booking() {
             🌿 Book Your Visit
           </Typography>
           <Typography color="rgba(255,255,255,0.85)" mt={1} fontSize={{ xs: "0.88rem", md: "1.05rem" }}>
-            ৳{PRICE_PER_PERSON} per person — PTA BaganBari Resort
+            ৳{PRICE_PER_PERSON} per person — PTA Agro Park
           </Typography>
         </Box>
       </Box>
@@ -284,7 +284,7 @@ export default function Booking() {
                 <Box sx={{ bgcolor: "#fff", p: { xs: 2, md: 3 } }}>
                   {[
                     { n: 1, title: "Open bKash / Nagad App",  desc: 'Go to "Send Money" option' },
-                    { n: 3, title: "Send exact amount",        desc: "৳25 × number of persons = total" },
+                    { n: 3, title: "Send exact amount",        desc: "৳50 × number of persons = total" },
                     { n: 4, title: "Copy Transaction ID",      desc: "Paste the TrxID in the form" },
                   ].map(s => (
                     <Box key={s.n} sx={{ display: "flex", gap: 1.5, mb: 2 }}>
@@ -299,8 +299,8 @@ export default function Booking() {
                   {/* bKash number highlight */}
                   <Box sx={{ bgcolor: "#fce4ec", borderRadius: 2, px: 2, py: 1.5, border: "2px dashed #f48fb1", display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
                     <Box>
-                      <Typography fontSize="0.68rem" color="#c2185b" fontWeight={700} letterSpacing={1}>bKash / Nagad / Rocket</Typography>
-                      <Typography fontWeight={800} fontSize={{ xs: "1.3rem", md: "1.4rem" }} color="#c2185b" letterSpacing={2}>01623325407</Typography>
+                      <Typography fontSize="0.68rem" color="#c2185b" fontWeight={700} letterSpacing={1}>bKash</Typography>
+                      <Typography fontWeight={800} fontSize={{ xs: "1.3rem", md: "1.4rem" }} color="#c2185b" letterSpacing={2}>01974-500611</Typography>
                     </Box>
                     <Typography fontSize="1.6rem">📱</Typography>
                   </Box>
@@ -328,69 +328,7 @@ export default function Booking() {
                 ))}
               </Box>
 
-              {/* ── PAYMENT INSTRUCTION ── */}
-              <Box sx={{ borderRadius: 2, overflow: "hidden", boxShadow: "0 4px 24px rgba(229,57,53,0.12)", border: "2px solid #f48fb1" }}>
-                {/* header */}
-                <Box sx={{ background: "linear-gradient(135deg,#e91e63,#c2185b)", px: 3, py: 2.5, display: "flex", alignItems: "center", gap: 1.5 }}>
-                  <Typography fontSize="1.6rem">💸</Typography>
-                  <Box>
-                    <Typography fontWeight={800} color="#fff" fontSize="1rem">Payment Instructions</Typography>
-                    <Typography color="rgba(255,255,255,0.8)" fontSize="0.75rem">Send money before booking</Typography>
-                  </Box>
-                </Box>
-
-                <Box sx={{ bgcolor: "#fff", p: 3 }}>
-                  {/* step 1 */}
-                  <Box sx={{ display: "flex", gap: 2, mb: 2.5 }}>
-                    <Box sx={{ width: 28, height: 28, borderRadius: "50%", bgcolor: "#fce4ec", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontWeight: 800, color: "#c2185b", fontSize: "0.82rem" }}>1</Box>
-                    <Box>
-                      <Typography fontWeight={700} fontSize="0.88rem" mb={0.5}>Open bKash / Nagad App</Typography>
-                      <Typography color="text.secondary" fontSize="0.82rem">Go to "Send Money" option</Typography>
-                    </Box>
-                  </Box>
-
-                  {/* step 2 — number */}
-                  <Box sx={{ display: "flex", gap: 2, mb: 2.5 }}>
-                    <Box sx={{ width: 28, height: 28, borderRadius: "50%", bgcolor: "#fce4ec", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontWeight: 800, color: "#c2185b", fontSize: "0.82rem" }}>2</Box>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography fontWeight={700} fontSize="0.88rem" mb={1}>Send to this number</Typography>
-                      <Box sx={{
-                        bgcolor: "#fce4ec", borderRadius: 3, px: 2.5, py: 1.5,
-                        border: "2px dashed #f48fb1",
-                        display: "flex", alignItems: "center", justifyContent: "space-between",
-                      }}>
-                        <Box>
-                          <Typography fontSize="0.7rem" color="#c2185b" fontWeight={700} letterSpacing={1}>bKash</Typography>
-                          <Typography fontWeight={800} fontSize="1.4rem" color="#c2185b" letterSpacing={2}>01974-500611</Typography>
-                        </Box>
-                        <Typography fontSize="1.8rem">📱</Typography>
-                      </Box>
-                    </Box>
-                  </Box>
-
-                  {/* step 3 */}
-                  <Box sx={{ display: "flex", gap: 2, mb: 2.5 }}>
-                    <Box sx={{ width: 28, height: 28, borderRadius: "50%", bgcolor: "#fce4ec", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontWeight: 800, color: "#c2185b", fontSize: "0.82rem" }}>3</Box>
-                    <Box>
-                      <Typography fontWeight={700} fontSize="0.88rem" mb={0.5}>Send exact amount</Typography>
-                      <Typography color="text.secondary" fontSize="0.82rem">৳25 × number of persons = total</Typography>
-                    </Box>
-                  </Box>
-
-                  {/* step 4 */}
-                  <Box sx={{ display: "flex", gap: 2 }}>
-                    <Box sx={{ width: 28, height: 28, borderRadius: "50%", bgcolor: "#fce4ec", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontWeight: 800, color: "#c2185b", fontSize: "0.82rem" }}>4</Box>
-                    <Box>
-                      <Typography fontWeight={700} fontSize="0.88rem" mb={0.5}>Copy Transaction ID</Typography>
-                      <Typography color="text.secondary" fontSize="0.82rem">Paste the TrxID in the form to complete booking</Typography>
-                    </Box>
-                  </Box>
-
-                  <Box sx={{ mt: 2.5, bgcolor: "#fff8e1", borderRadius: 2, p: 1.5, border: "1px solid #ffe082" }}>
-                    <Typography fontSize="0.78rem" color="#f57f17">⚠️ Booking will only be confirmed after payment verification by admin.</Typography>
-                  </Box>
-                </Box>
-              </Box>
+              
 
               {/* ── TICKET PRICE ── */}
              

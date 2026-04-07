@@ -299,11 +299,11 @@ export default function MyTicket() {
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
       <Head>
-        <title>My Tickets — PTA BaganBari Resort</title>
-        <meta name="description" content="View and download your PTA BaganBari Resort booking tickets. Enter your phone number to find all your approved, pending and rejected bookings." />
+        <title>My Tickets — PTA Agro Park</title>
+        <meta name="description" content="View and download your PTA Agro Park booking tickets. Enter your phone number to find all your approved, pending and rejected bookings." />
         <meta name="keywords" content="my ticket PTA BaganBari, booking status, resort ticket Bangladesh" />
-        <meta property="og:title" content="My Tickets — PTA BaganBari Resort" />
-        <meta property="og:description" content="Check your booking status and download your ticket for PTA BaganBari Resort." />
+        <meta property="og:title" content="My Tickets — PTA Agro Park" />
+        <meta property="og:description" content="Check your booking status and download your ticket for PTA Agro Park." />
         <meta name="robots" content="index, follow" />
       </Head>
 

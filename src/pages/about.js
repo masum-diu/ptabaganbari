@@ -25,11 +25,11 @@ export default function About() {
   return (
     <Box>
       <Head>
-        <title>About Us — PTA BaganBari Resort</title>
-        <meta name="description" content="Learn about PTA BaganBari Resort — our story, values, and the team behind Bangladesh's favourite eco tourism destination in Kasba, Brahmanbaria." />
+        <title>About Us — PTA Agro Park</title>
+        <meta name="description" content="Learn about PTA Agro Park — our story, values, and the team behind Bangladesh's favourite eco tourism destination in Kasba, Brahmanbaria." />
         <meta name="keywords" content="about PTA BaganBari, eco resort Bangladesh, Brahmanbaria tourism, resort team" />
-        <meta property="og:title" content="About PTA BaganBari Resort" />
-        <meta property="og:description" content="Our story, values and team behind PTA BaganBari Resort, Kasba, Brahmanbaria." />
+        <meta property="og:title" content="About PTA Agro Park" />
+        <meta property="og:description" content="Our story, values and team behind PTA Agro Park, Kasba, Brahmanbaria." />
         <meta name="robots" content="index, follow" />
       </Head>
       {/* ── PAGE HERO ── */}
@@ -81,7 +81,7 @@ export default function About() {
                 A Sanctuary of Nature<br />in the Heart of Bangladesh
               </Typography>
               <Typography color="text.secondary" lineHeight={2} mb={2.5}>
-                PTA BaganBari Resort was founded with a single vision — to offer visitors an authentic, peaceful escape into Bangladesh's breathtaking natural landscape. Nestled among lush green forests and serene waterways, our resort is a place where time slows down.
+                PTA Agro Park was founded with a single vision — to offer visitors an authentic, peaceful escape into Bangladesh's breathtaking natural landscape. Nestled among lush green forests and serene waterways, our resort is a place where time slows down.
               </Typography>
               <Typography color="text.secondary" lineHeight={2}>
                 We believe in responsible tourism that benefits both our guests and the local community. Every visit supports local farmers, artisans, and families who call BaganBari home.

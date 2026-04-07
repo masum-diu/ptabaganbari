@@ -8,7 +8,7 @@ export default function Footer() {
         <Grid container spacing={4} mb={4}>
           <Grid item xs={12} md={4}>
             <Typography fontWeight="bold" fontSize="1.2rem" color="#a5d6a7" mb={1}>
-              🌿 PTA BaganBari Resort
+              🌿 PTA Agro Park
             </Typography>
             <Typography color="rgba(255,255,255,0.55)" fontSize="0.88rem" lineHeight={1.8}>
               A peaceful eco-tourism destination nestled in the heart of nature. Come experience the beauty of Bangladesh's village life.
@@ -43,7 +43,7 @@ export default function Footer() {
         </Grid>
         <Box sx={{ borderTop: "1px solid rgba(255,255,255,0.1)", pt: 3, textAlign: "center" }}>
           <Typography color="rgba(255,255,255,0.4)" fontSize="0.82rem">
-            © 2026 PTA BaganBari Resort. All rights reserved.
+            © 2026 PTA Agro Park. All rights reserved.
           </Typography>
         </Box>
       </Container>

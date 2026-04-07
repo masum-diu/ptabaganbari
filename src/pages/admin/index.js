@@ -50,7 +50,7 @@ export default function AdminLogin() {
           <Chip label="Admin Panel" color="primary" size="small" sx={{ mb: 1.5 }} />
           <Typography variant="h5" fontWeight={800}>Welcome Back</Typography>
           <Typography color="text.secondary" fontSize="0.88rem" mt={0.5}>
-            PTA BaganBari Resort — Admin
+            PTA Agro Park — Admin
           </Typography>
         </Box>
 

@@ -27,10 +27,10 @@ export default function MapPage() {
   return (
     <Box>
       <Head>
-        <title>Location — PTA BaganBari Resort, Kasba, Brahmanbaria</title>
-        <meta name="description" content="Find PTA BaganBari Resort on the map. Located in Loxmipur, Kasba, Brahmanbaria, Bangladesh. Get directions, contact info and opening hours." />
+        <title>Location — PTA Agro Park, Kasba, Brahmanbaria</title>
+        <meta name="description" content="Find PTA Agro Park on the map. Located in Loxmipur, Kasba, Brahmanbaria, Bangladesh. Get directions, contact info and opening hours." />
         <meta name="keywords" content="PTA BaganBari location, Kasba Brahmanbaria map, resort directions Bangladesh" />
-        <meta property="og:title" content="Location — PTA BaganBari Resort" />
+        <meta property="og:title" content="Location — PTA Agro Park" />
         <meta property="og:description" content="Find us at Loxmipur PTA Baganbari, Kasba, Brahmanbaria, Bangladesh." />
         <meta name="robots" content="index, follow" />
       </Head>
@@ -64,7 +64,7 @@ export default function MapPage() {
             <Grid size={{ xs: 12, md: 8 }}>
               <Box sx={{ borderRadius: 2, overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.12)", border: "2px solid", borderColor: "primary.light", height: 480 }}>
                 <iframe
-                  title="PTA BaganBari Resort Location"
+                  title="PTA Agro Park Location"
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7305.31412022308!2d91.12535930803425!3d23.723937674619588!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x375473005b976c95%3A0x274d1ebe6829dc8d!2z4Kay4KaV4KeN4Ka34KeA4Kaq4KeB4KawIOCmrOCmvuCml-CmvuCmqOCmrOCmvuCnnOCngA!5e0!3m2!1sen!2sbd!4v1774866059712!5m2!1sen!2sbd"
                   width="100%"
                   height="100%"

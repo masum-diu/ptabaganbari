@@ -23,11 +23,11 @@ export default function Home() {
   return (
     <Box>
       <Head>
-        <title>PTA BaganBari Resort — Eco Tourism in Brahmanbaria, Bangladesh</title>
-        <meta name="description" content="Visit PTA BaganBari Resort in Kasba, Brahmanbaria. Enjoy eco trails, camping, scenic views and nature activities. Book your ticket online for just ৳25 per person." />
+        <title>PTA Agro Park — Eco Tourism in Brahmanbaria, Bangladesh</title>
+        <meta name="description" content="Visit PTA Agro Park in Kasba, Brahmanbaria. Enjoy eco trails, camping, scenic views and nature activities. Book your ticket online for just ৳25 per person." />
         <meta name="keywords" content="PTA BaganBari, resort Bangladesh, eco tourism, Brahmanbaria, Kasba resort, nature resort, book ticket" />
-        <meta property="og:title" content="PTA BaganBari Resort — Eco Tourism Bangladesh" />
-        <meta property="og:description" content="Escape the city and explore green trails at PTA BaganBari Resort, Kasba, Brahmanbaria." />
+        <meta property="og:title" content="PTA Agro Park — Eco Tourism Bangladesh" />
+        <meta property="og:description" content="Escape the city and explore green trails at PTA Agro Park, Kasba, Brahmanbaria." />
         <meta property="og:type" content="website" />
         <meta name="robots" content="index, follow" />
       </Head>
@@ -46,7 +46,7 @@ export default function Home() {
           <Typography variant="h2" color="#fff"
             sx={{ textShadow: "0 4px 24px rgba(0,0,0,0.5)", lineHeight: 1.15, fontSize: { xs: "2rem", md: "3.2rem" } }}>
             Welcome to<br />
-            <Box component="span" sx={{ color: "primary.light" }}>PTA BaganBari</Box> Resort
+            <Box component="span" sx={{ color: "primary.light" }}>PTA Agro</Box> Park
           </Typography>
           <Typography sx={{ mt: 2.5, color: "rgba(255,255,255,0.82)", fontSize: "1.1rem", maxWidth: 560, mx: "auto" }}>
             Escape the city — breathe fresh air, explore green trails, and create memories that last a lifetime.

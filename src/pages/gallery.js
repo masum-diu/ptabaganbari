@@ -28,11 +28,11 @@ export default function Gallery() {
   return (
     <Box>
       <Head>
-        <title>Photo Gallery — PTA BaganBari Resort</title>
-        <meta name="description" content="Explore the beauty of PTA BaganBari Resort through our photo gallery. Nature trails, waterfalls, camping spots and village life in Kasba, Brahmanbaria." />
+        <title>Photo Gallery — PTA Agro Park</title>
+        <meta name="description" content="Explore the beauty of PTA Agro Park through our photo gallery. Nature trails, waterfalls, camping spots and village life in Kasba, Brahmanbaria." />
         <meta name="keywords" content="PTA BaganBari gallery, resort photos Bangladesh, nature photography, Brahmanbaria" />
-        <meta property="og:title" content="Photo Gallery — PTA BaganBari Resort" />
-        <meta property="og:description" content="Browse stunning photos of PTA BaganBari Resort — nature, water, activities and village life." />
+        <meta property="og:title" content="Photo Gallery — PTA Agro Park" />
+        <meta property="og:description" content="Browse stunning photos of PTA Agro Park — nature, water, activities and village life." />
         <meta name="robots" content="index, follow" />
       </Head>
       {/* ── PAGE HERO ── */}
